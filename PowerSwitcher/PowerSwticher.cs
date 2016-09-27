@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Management;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
@@ -8,6 +9,7 @@ using System.Windows.Forms;
 
 namespace PowerSwitcher
 {
+    public enum PowerPlugStatus { Online, Offline }
     public class PowerSchema
     {
         public string Name { get; }
@@ -22,17 +24,43 @@ namespace PowerSwitcher
 
     public class PowerManager
     {
-        List<PowerSchema> powerSchemas { get; set; }
+        public List<PowerSchema> PowerSchemas { get; private set; }
+
+        public void InitSchemas()
+        {
+            PowerSchemas = WmiPowerSchemesWrapper.GetCurrentSchemas();
+        }
+
+        public void SetPowerSchema(PowerSchema schema)
+        {
+            PowProfWrapper.SetActiveGuid(schema.Guid);
+        }
+
+        public PowerSchema GetCurrentSchema()
+        {
+            Guid currSchemaGuid;
+            PowerSchema currSchema = null;
+
+            currSchemaGuid = PowProfWrapper.GetActiveGuid();
+            currSchema = PowerSchemas.Where(s => s.Guid == currSchemaGuid).FirstOrDefault();
+
+            if(currSchema == null) { throw new NotImplementedException("Schemas relaoding not supported yet."); }
+
+            return currSchema;
+
+        }
 
     }
 
+
     #region Wrappers
+
     public static class BatteryInfoWrapper
     {
-        public static bool IsCharging()
+        public static PowerPlugStatus IsCharging()
         {
             PowerStatus pwrStatus = SystemInformation.PowerStatus;
-            return pwrStatus.PowerLineStatus == PowerLineStatus.Online;
+            return (pwrStatus.PowerLineStatus == PowerLineStatus.Online) ? PowerPlugStatus.Online : PowerPlugStatus.Offline;
         }
 
         public static int GetChargeValue()
@@ -40,13 +68,14 @@ namespace PowerSwitcher
             PowerStatus pwrStatus = SystemInformation.PowerStatus;
             return pwrStatus.BatteryLifeRemaining / 60;
         }
+
     }
 
 
     public static class PowProfWrapper
     {
 
-        private static Guid GetActiveGuid()
+        public static Guid GetActiveGuid()
         {
             Guid activeSchema = Guid.Empty;
             IntPtr guidPtr = IntPtr.Zero;
@@ -62,7 +91,7 @@ namespace PowerSwitcher
             return activeSchema;
         }
 
-        private static void SetActiveGuid(Guid guid)
+        public static void SetActiveGuid(Guid guid)
         {
             var errCode = PowerSetActiveScheme(IntPtr.Zero, ref guid);
             if(errCode != 0) { throw new PowerSwitcherWrappersException($"SetActiveGuid() failed with code {errCode}"); }
@@ -75,16 +104,16 @@ namespace PowerSwitcher
         private static extern int GetSystemDefaultLCID();
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        static extern IntPtr LocalFree(IntPtr hMem);
+        private static extern IntPtr LocalFree(IntPtr hMem);
 
         [DllImportAttribute("powrprof.dll", EntryPoint = "PowerSetActiveScheme")]
-        public static extern uint PowerSetActiveScheme(IntPtr UserPowerKey, ref Guid ActivePolicyGuid);
+        private static extern uint PowerSetActiveScheme(IntPtr UserPowerKey, ref Guid ActivePolicyGuid);
 
         [DllImportAttribute("powrprof.dll", EntryPoint = "PowerGetActiveScheme")]
-        public static extern uint PowerGetActiveScheme(IntPtr UserPowerKey, out IntPtr ActivePolicyGuid);
+        private static extern uint PowerGetActiveScheme(IntPtr UserPowerKey, out IntPtr ActivePolicyGuid);
 
         [DllImportAttribute("powrprof.dll", EntryPoint = "PowerReadFriendlyName")]
-        public static extern uint PowerReadFriendlyName(IntPtr RootPowerKey, ref Guid SchemeGuid, IntPtr SubGroupOfPowerSettingsGuid, IntPtr PowerSettingGuid, IntPtr Buffer, ref uint BufferSize);
+        private static extern uint PowerReadFriendlyName(IntPtr RootPowerKey, ref Guid SchemeGuid, IntPtr SubGroupOfPowerSettingsGuid, IntPtr PowerSettingGuid, IntPtr Buffer, ref uint BufferSize);
 
         #endregion
     }
