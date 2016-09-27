@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Management;
 using System.Runtime.InteropServices;
@@ -22,13 +23,29 @@ namespace PowerSwitcher
         }
     }
 
-    public class PowerManager
+    public interface IPowerManager : INotifyPropertyChanged
+    {
+        List<PowerSchema> PowerSchemas { get; }
+        void UpdateSchemas();
+
+        void SetPowerSchema(PowerSchema schema);
+        PowerSchema GetCurrentSchema();
+    }
+
+    public class PowerManager : IPowerManager
     {
         public List<PowerSchema> PowerSchemas { get; private set; }
+        public event PropertyChangedEventHandler PropertyChanged;
 
-        public void InitSchemas()
+        public PowerManager()
+        {
+            UpdateSchemas();
+        }
+
+        public void UpdateSchemas()
         {
             PowerSchemas = WmiPowerSchemesWrapper.GetCurrentSchemas();
+            PropertyChanged(this, new PropertyChangedEventArgs(nameof(PowerSchemas)));
         }
 
         public void SetPowerSchema(PowerSchema schema)
@@ -41,6 +58,7 @@ namespace PowerSwitcher
             Guid currSchemaGuid;
             PowerSchema currSchema = null;
 
+            UpdateSchemas();
             currSchemaGuid = PowProfWrapper.GetActiveGuid();
             currSchema = PowerSchemas.Where(s => s.Guid == currSchemaGuid).FirstOrDefault();
 
@@ -49,6 +67,7 @@ namespace PowerSwitcher
             return currSchema;
 
         }
+
 
     }
 
