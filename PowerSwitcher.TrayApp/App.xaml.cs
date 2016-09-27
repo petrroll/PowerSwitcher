@@ -35,7 +35,9 @@ namespace PowerSwitcher.TrayApp
                 return;
             }
 
+#pragma warning disable RECS0026 // Possible unassigned object created by 'new'
             new MainWindow();
+#pragma warning restore RECS0026 // Possible unassigned object created by 'new'
         }
 
 
