@@ -26,6 +26,7 @@ namespace PowerSwitcher
 
     }
 
+    #region Wrappers
     public static class BatteryInfoWrapper
     {
         public static bool IsCharging()
@@ -49,7 +50,11 @@ namespace PowerSwitcher
         {
             Guid activeSchema = Guid.Empty;
             IntPtr guidPtr = IntPtr.Zero;
-            if (PowerGetActiveScheme(IntPtr.Zero, out guidPtr) != 0) { return Guid.Empty; }
+
+            var errCode = PowerGetActiveScheme(IntPtr.Zero, out guidPtr);
+
+            if (errCode != 0) { throw new PowerSwitcherWrappersException($"GetActiveGuid() failed with code {errCode}"); }
+            if (guidPtr == IntPtr.Zero) { throw new PowerSwitcherWrappersException("GetActiveGuid() returned null pointer for GUID"); }
 
             activeSchema = (Guid)Marshal.PtrToStructure(guidPtr, typeof(Guid));
             if (guidPtr != IntPtr.Zero) { LocalFree(guidPtr); }
@@ -59,7 +64,8 @@ namespace PowerSwitcher
 
         private static void SetActiveGuid(Guid guid)
         {
-            PowerSetActiveScheme(IntPtr.Zero, ref guid);
+            var errCode = PowerSetActiveScheme(IntPtr.Zero, ref guid);
+            if(errCode != 0) { throw new PowerSwitcherWrappersException($"SetActiveGuid() failed with code {errCode}"); }
         }
 
 
@@ -109,7 +115,7 @@ namespace PowerSwitcher
                 var instanceId = (string)mo.GetPropertyValue("InstanceID");
 
                 var match = Regex.Match(instanceId, @"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
-                if(!match.Success) { return null; }
+                if (!match.Success) { throw new PowerSwitcherWrappersException("Invalid GUID format in Win32_PowerPlan.InstanceID"); }
 
                 string guid = match.Value;
                 schemas.Add(new PowerSchema(name, new Guid(guid)));
@@ -117,7 +123,16 @@ namespace PowerSwitcher
 
             return schemas;
         }
+
     }
+
+    public class PowerSwitcherWrappersException : System.Exception
+    {
+        public PowerSwitcherWrappersException() { }
+        public PowerSwitcherWrappersException(string message) : base(message) { }
+        public PowerSwitcherWrappersException(string message, System.Exception inner) : base(message, inner) { }
+    }
+    #endregion
 
 }
 
