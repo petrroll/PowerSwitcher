@@ -20,9 +20,12 @@ namespace PowerSwitcher.TrayApp
     /// </summary>
     public partial class MainWindow : Window
     {
+        TrayApp trayApp;
+
         public MainWindow()
         {
             InitializeComponent();
+            trayApp = new TrayApp();
         }
     }
 }
