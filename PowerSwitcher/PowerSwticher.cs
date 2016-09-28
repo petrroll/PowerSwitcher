@@ -35,7 +35,7 @@ namespace PowerSwitcher
     {
         PowProfWrapper powerWraper;
         BatteryInfoWrapper batteryWrapper;
-        WmiPowerSchemesWrapper powerSchemesWrapper;
+        //WmiPowerSchemesWrapper powerSchemesWrapper;
 
 
         public List<PowerSchema> PowerSchemas { get; private set; }
@@ -46,14 +46,14 @@ namespace PowerSwitcher
         {
             powerWraper = new PowProfWrapper();
             batteryWrapper = new BatteryInfoWrapper(powerChangedEvent);
-            powerSchemesWrapper = new WmiPowerSchemesWrapper();
+            //powerSchemesWrapper = new WmiPowerSchemesWrapper();
 
             UpdateSchemas();
         }
 
         public void UpdateSchemas()
         {
-            PowerSchemas = powerSchemesWrapper.GetCurrentSchemas();
+            PowerSchemas = powerWraper.GetCurrentSchemas();
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PowerSchemas)));
         }
 
