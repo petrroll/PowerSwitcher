@@ -62,13 +62,19 @@ namespace PowerSwitcher.Wrappers
             Guid activeSchema = Guid.Empty;
             IntPtr guidPtr = IntPtr.Zero;
 
-            var errCode = PowerGetActiveScheme(IntPtr.Zero, out guidPtr);
+            try
+            {
+                var errCode = PowerGetActiveScheme(IntPtr.Zero, out guidPtr);
 
-            if (errCode != 0) { throw new PowerSwitcherWrappersException($"GetActiveGuid() failed with code {errCode}"); }
-            if (guidPtr == IntPtr.Zero) { throw new PowerSwitcherWrappersException("GetActiveGuid() returned null pointer for GUID"); }
+                if (errCode != 0) { throw new PowerSwitcherWrappersException($"GetActiveGuid() failed with code {errCode}"); }
+                if (guidPtr == IntPtr.Zero) { throw new PowerSwitcherWrappersException("GetActiveGuid() returned null pointer for GUID"); }
 
-            activeSchema = (Guid)Marshal.PtrToStructure(guidPtr, typeof(Guid));
-            if (guidPtr != IntPtr.Zero) { LocalFree(guidPtr); }
+                activeSchema = (Guid)Marshal.PtrToStructure(guidPtr, typeof(Guid));
+            }
+            finally
+            {
+                if (guidPtr != IntPtr.Zero) { LocalFree(guidPtr); }
+            }
 
             return activeSchema;
         }
@@ -86,17 +92,23 @@ namespace PowerSwitcher.Wrappers
             IntPtr bufferPointer = IntPtr.Zero;
             uint bufferSize = 0;
 
-            var errCode = PowerReadFriendlyName(IntPtr.Zero, ref guid, IntPtr.Zero, IntPtr.Zero, bufferPointer, ref bufferSize);
-            if (errCode != 0) { throw new PowerSwitcherWrappersException($"GetPowerPlanName() failed when getting buffer size with code {errCode}"); }
+            try
+            {
+                var errCode = PowerReadFriendlyName(IntPtr.Zero, ref guid, IntPtr.Zero, IntPtr.Zero, bufferPointer, ref bufferSize);
+                if (errCode != 0) { throw new PowerSwitcherWrappersException($"GetPowerPlanName() failed when getting buffer size with code {errCode}"); }
 
-            if (bufferSize <= 0) { return String.Empty; }
-            bufferPointer = Marshal.AllocHGlobal((int)bufferSize);
+                if (bufferSize <= 0) { return String.Empty; }
+                bufferPointer = Marshal.AllocHGlobal((int)bufferSize);
 
-            errCode = PowerReadFriendlyName(IntPtr.Zero, ref guid, IntPtr.Zero, IntPtr.Zero, bufferPointer, ref bufferSize);
-            if (errCode != 0) { throw new PowerSwitcherWrappersException($"GetPowerPlanName() failed when getting buffer pointer with code {errCode}"); }
-            
-            name = Marshal.PtrToStringUni(bufferPointer);     
-            if (bufferPointer != IntPtr.Zero) { Marshal.FreeHGlobal(bufferPointer); }
+                errCode = PowerReadFriendlyName(IntPtr.Zero, ref guid, IntPtr.Zero, IntPtr.Zero, bufferPointer, ref bufferSize);
+                if (errCode != 0) { throw new PowerSwitcherWrappersException($"GetPowerPlanName() failed when getting buffer pointer with code {errCode}"); }
+
+                name = Marshal.PtrToStringUni(bufferPointer);
+            }
+            finally
+            {
+                if (bufferPointer != IntPtr.Zero) { Marshal.FreeHGlobal(bufferPointer); }
+            }
 
             return name;
         }
@@ -159,10 +171,9 @@ namespace PowerSwitcher.Wrappers
         #endregion
     }
 
-    //Deprecated wrapper, not used anymore (replaced by PowProWrapper)
-    public class WmiPowerSchemesWrapper
+    public class DefaultPowerSchemes
     {
-        public List<PowerSchema> GetDefaultSchemas()
+        public List<PowerSchema> GetCurrentSchemas()
         {
             var schemas = new List<PowerSchema>();
 
@@ -172,25 +183,31 @@ namespace PowerSwitcher.Wrappers
 
             return schemas;
         }
+    }
 
+    //Deprecated wrapper, not used anymore (replaced by PowProWrapper)
+    public class WmiPowerSchemesWrapper
+    {
         public List<PowerSchema> GetCurrentSchemas()
         {
             var schemas = new List<PowerSchema>();
 
-            var searcher = new ManagementObjectSearcher(@"root\CIMV2\power", @"Select * FROM Win32_PowerPlan");
-            var collection = searcher.Get();
+            using (var searcher = new ManagementObjectSearcher(@"root\CIMV2\power", @"Select * FROM Win32_PowerPlan"))
+            using (var collection = searcher.Get())
+            {              
+                foreach (ManagementObject mo in collection)
+                {                   
+                    var name = (string)mo.GetPropertyValue("ElementName");
+                    var instanceId = (string)mo.GetPropertyValue("InstanceID");
 
-            foreach (ManagementObject mo in collection)
-            {
-                var name = (string)mo.GetPropertyValue("ElementName");
-                var instanceId = (string)mo.GetPropertyValue("InstanceID");
+                    var match = Regex.Match(instanceId, @"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
+                    if (!match.Success) { throw new PowerSwitcherWrappersException("Invalid GUID format in Win32_PowerPlan.InstanceID"); }
 
-                var match = Regex.Match(instanceId, @"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
-                if (!match.Success) { throw new PowerSwitcherWrappersException("Invalid GUID format in Win32_PowerPlan.InstanceID"); }
-
-                string guid = match.Value;
-                schemas.Add(new PowerSchema(name, new Guid(guid)));
+                    string guid = match.Value;
+                    schemas.Add(new PowerSchema(name, new Guid(guid)));
+                }
             }
+
 
             return schemas;
         }
