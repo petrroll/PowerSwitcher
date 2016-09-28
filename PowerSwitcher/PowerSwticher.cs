@@ -54,7 +54,7 @@ namespace PowerSwitcher
         public void UpdateSchemas()
         {
             PowerSchemas = powerSchemesWrapper.GetCurrentSchemas();
-            PropertyChanged(this, new PropertyChangedEventArgs(nameof(PowerSchemas)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PowerSchemas)));
         }
 
         public void SetPowerSchema(PowerSchema schema)
