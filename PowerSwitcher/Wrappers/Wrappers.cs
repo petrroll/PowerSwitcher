@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Management;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace PowerSwitcher.Wrappers
@@ -13,7 +11,7 @@ namespace PowerSwitcher.Wrappers
 
     public class BatteryInfoWrapper : IDisposable
     {
-        bool dispozed = false;
+
 
         Microsoft.Win32.PowerModeChangedEventHandler powerChangedDelegate = null;
         public BatteryInfoWrapper(Action<PowerPlugStatus> powerStatusChangedFunc)
@@ -34,23 +32,26 @@ namespace PowerSwitcher.Wrappers
             return pwrStatus.BatteryLifeRemaining / 60;
         }
 
+        #region IDisposable Support
+        bool dispozed = false;
         public void Dispose()
         {
-            if (!dispozed)
-            {
-                var tmpDelegate = powerChangedDelegate;
-                if (tmpDelegate == null) { return; }
+            if (dispozed) { return; }
 
-                Microsoft.Win32.SystemEvents.PowerModeChanged -= tmpDelegate;
-                GC.SuppressFinalize(this);
-                dispozed = true;
-            }
+            var tmpDelegate = powerChangedDelegate;
+            if (tmpDelegate == null) { return; }
+
+            Microsoft.Win32.SystemEvents.PowerModeChanged -= tmpDelegate;
+
+            GC.SuppressFinalize(this);
+            dispozed = true;
         }
 
         ~BatteryInfoWrapper()
         {
             Dispose();
         }
+        #endregion
     }
 
 
