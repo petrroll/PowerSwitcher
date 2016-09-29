@@ -98,9 +98,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\PowerSwitcher\PowerSwitcher.csproj">
       <Project>{1d107d93-2902-4782-9c06-825925c3b39f}</Project>
       <Name>PowerSwitcher</Name>
