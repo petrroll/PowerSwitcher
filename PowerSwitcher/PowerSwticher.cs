@@ -8,28 +8,40 @@ using System.Linq;
 namespace PowerSwitcher
 {
     public enum PowerPlugStatus { Online, Offline }
-    public class PowerSchema
-    {
-        public string Name { get; }
-        public Guid Guid { get; }
 
-        public PowerSchema(string name, Guid guid)
-        {
-            this.Name = name;
-            this.Guid = guid;
-        }
+    public interface IPowerSchema
+    {
+        string Name { get; }
+        Guid Guid { get; }
+        bool IsActive { get; }
     }
 
     public interface IPowerManager : INotifyPropertyChanged
     {
         event Action<PowerPlugStatus> PowerSourceChanged;
 
-        List<PowerSchema> PowerSchemas { get; }
+        IEnumerable<IPowerSchema> PowerSchemas { get; }
         void UpdateSchemas();
 
-        void SetPowerSchema(PowerSchema schema);
-        PowerSchema GetCurrentSchema();
+        void SetPowerSchema(IPowerSchema schema);
+        IPowerSchema GetCurrentSchema();
     }
+
+    public class PowerSchema : IPowerSchema
+    {
+        public string Name { get; }
+        public Guid Guid { get; }
+        public bool IsActive { get; set; }
+
+        public PowerSchema(string name, Guid guid)
+        {
+            this.Name = name;
+            this.Guid = guid;
+            this.IsActive = false;
+        }
+    }
+
+
 
     public class PowerManager : IPowerManager
     {
@@ -38,7 +50,7 @@ namespace PowerSwitcher
         //WmiPowerSchemesWrapper powerSchemesWrapper;
 
 
-        public List<PowerSchema> PowerSchemas { get; private set; }
+        public IEnumerable<IPowerSchema> PowerSchemas { get; private set; }
         public event PropertyChangedEventHandler PropertyChanged;
         public event Action<PowerPlugStatus> PowerSourceChanged;
 
@@ -54,27 +66,34 @@ namespace PowerSwitcher
         public void UpdateSchemas()
         {
             PowerSchemas = powerWraper.GetCurrentSchemas();
+            getCurrentSchemaWithoutUpdate().IsActive = true;
+
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PowerSchemas)));
         }
 
-        public void SetPowerSchema(PowerSchema schema)
+        public void SetPowerSchema(IPowerSchema schema)
         {
             powerWraper.SetActiveGuid(schema.Guid);
         }
 
-        public PowerSchema GetCurrentSchema()
+        public IPowerSchema GetCurrentSchema()
+        {
+            UpdateSchemas();
+            return getCurrentSchemaWithoutUpdate();
+
+        }
+
+        private PowerSchema getCurrentSchemaWithoutUpdate()
         {
             Guid currSchemaGuid;
             PowerSchema currSchema = null;
 
-            UpdateSchemas();
             currSchemaGuid = powerWraper.GetActiveGuid();
-            currSchema = PowerSchemas.Where(s => s.Guid == currSchemaGuid).FirstOrDefault();
+            currSchema = (PowerSchema)PowerSchemas.Where(s => s.Guid == currSchemaGuid).FirstOrDefault();
 
-            if(currSchema == null) { throw new NotImplementedException("Schemas relaoding not supported yet."); }
+            if (currSchema == null) { throw new NotImplementedException("Schemas relaoding not supported yet."); }
 
             return currSchema;
-
         }
 
         private void powerChangedEvent(PowerPlugStatus newStatus)

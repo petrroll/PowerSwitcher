@@ -24,6 +24,8 @@ namespace PowerSwitcher.TrayApp
             _trayIcon = new WF.NotifyIcon();
             _trayIcon.ContextMenu = new WF.ContextMenu();
 
+            _trayIcon.ContextMenu.MenuItems.Add("-");
+
             var aboutItem = _trayIcon.ContextMenu.MenuItems.Add("About");
             aboutItem.Click += About_Click;
 
@@ -39,6 +41,8 @@ namespace PowerSwitcher.TrayApp
 
         private void ContextMenu_Popup(object sender, EventArgs e)
         {
+            powerManager.UpdateSchemas();
+
             for (int i = _trayIcon.ContextMenu.MenuItems.Count - 1; i >= 0; i--)
             {
                 var item = _trayIcon.ContextMenu.MenuItems[i];
@@ -50,10 +54,10 @@ namespace PowerSwitcher.TrayApp
 
             foreach (var powerSchema in powerManager.PowerSchemas)
             {
-
                 var newItem = new WF.MenuItem(powerSchema.Name, (s, ea) => { powerManager.SetPowerSchema(powerSchema); });
                 newItem.Name = $"pwrScheme{powerSchema.Guid}";
-                _trayIcon.ContextMenu.MenuItems.Add(newItem);
+                newItem.Checked = powerSchema.IsActive;
+                _trayIcon.ContextMenu.MenuItems.Add(0, newItem);
             }
         }
 
