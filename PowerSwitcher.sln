@@ -7,6 +7,23 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerSwitcher", "PowerSwitc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerSwitcher.TrayApp", "PowerSwitcher.TrayApp\PowerSwitcher.TrayApp.csproj", "{72D5D98C-D8E8-4164-889E-645142A10EDD}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5B372EF5-7A61-4E56-B86E-D4CC811A053A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Appx", "Appx", "{8E0616E9-3407-4127-AFEB-EDD34F9D66B5}"
+	ProjectSection(SolutionItems) = preProject
+		PowerSwitcher.Appx\AppxManifest.xml = PowerSwitcher.Appx\AppxManifest.xml
+		PowerSwitcher.Appx\CreateSelfSignCert.bat = PowerSwitcher.Appx\CreateSelfSignCert.bat
+		PowerSwitcher.Appx\MappingFile.txt = PowerSwitcher.Appx\MappingFile.txt
+		PowerSwitcher.Appx\PackageScript.bat = PowerSwitcher.Appx\PackageScript.bat
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{E432A9F1-7F67-472E-B75D-BBBAAE8980E3}"
+	ProjectSection(SolutionItems) = preProject
+		PowerSwitcher.Assets\Square150x150Logo.png = PowerSwitcher.Assets\Square150x150Logo.png
+		PowerSwitcher.Assets\Square44x44Logo.png = PowerSwitcher.Assets\Square44x44Logo.png
+		PowerSwitcher.Assets\StoreLogo.png = PowerSwitcher.Assets\StoreLogo.png
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +41,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8E0616E9-3407-4127-AFEB-EDD34F9D66B5} = {5B372EF5-7A61-4E56-B86E-D4CC811A053A}
+		{E432A9F1-7F67-472E-B75D-BBBAAE8980E3} = {5B372EF5-7A61-4E56-B86E-D4CC811A053A}
 	EndGlobalSection
 EndGlobal

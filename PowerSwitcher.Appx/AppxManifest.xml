@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Package
+   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+   xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10">
+  <Identity Name="Petrroll.PowerSwitcher"
+    ProcessorArchitecture="x86"
+    Publisher="CN=Petrroll, L=Prague, C=Czech Republic"
+    Version="0.1.0.0" />
+  <Properties>
+    <DisplayName>PowerSwitcher</DisplayName>
+    <PublisherDisplayName>Petrroll</PublisherDisplayName>
+    <Description>Switch Windows power plans with ease!</Description>
+    <Logo>Assets\StoreLogo.png</Logo>
+  </Properties>
+  <Resources>
+    <Resource Language="en-us" />
+  </Resources>
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.14342.0" MaxVersionTested="10.0.14393.187" />
+  </Dependencies>
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust"/>
+  </Capabilities>
+  <Applications>
+    <Application Id="PowerSwitcher" Executable="PowerSwitcher.TrayApp.exe" EntryPoint="Windows.FullTrustApplication">
+      <uap:VisualElements
+       BackgroundColor="#464646"
+       DisplayName="PowerSwitcher"
+       Square150x150Logo="Assets/Square150x150Logo.png"
+       Square44x44Logo="Assets/Square44x44Logo.png"
+       Description="PowerSwitcher" />
+      <Extensions>
+        <desktop:Extension Category="windows.startupTask" Executable="PowerSwitcher.TrayApp.exe" EntryPoint="Windows.FullTrustApplication">
+          <desktop:StartupTask TaskId="PowerSwitcher" Enabled="true" DisplayName="PowerSwitcher" />
+        </desktop:Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+</Package>
