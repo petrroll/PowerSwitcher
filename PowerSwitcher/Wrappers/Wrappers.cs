@@ -33,25 +33,37 @@ namespace PowerSwitcher.Wrappers
         }
 
         #region IDisposable Support
-        bool dispozed = false;
+        private bool disposedValue = false; 
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposedValue) { return; }
+
+            if (disposing)
+            {
+                var tmpDelegate = powerChangedDelegate;
+                if (tmpDelegate == null) { return; }
+
+                Microsoft.Win32.SystemEvents.PowerModeChanged -= tmpDelegate;
+            }
+
+            disposedValue = true;
+        }
+
+        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
+        // ~BatteryInfoWrapper() {
+        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+        //   Dispose(false);
+        // }
+        
         public void Dispose()
         {
-            if (dispozed) { return; }
-
-            var tmpDelegate = powerChangedDelegate;
-            if (tmpDelegate == null) { return; }
-
-            Microsoft.Win32.SystemEvents.PowerModeChanged -= tmpDelegate;
-
-            GC.SuppressFinalize(this);
-            dispozed = true;
-        }
-
-        ~BatteryInfoWrapper()
-        {
-            Dispose();
+            Dispose(true);
+            //GC.SuppressFinalize(this); //No destructor so isn't required yet
         }
         #endregion
+
+
     }
 
 

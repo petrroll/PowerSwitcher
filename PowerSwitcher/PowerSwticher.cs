@@ -16,7 +16,7 @@ namespace PowerSwitcher
         bool IsActive { get; }
     }
 
-    public interface IPowerManager : INotifyPropertyChanged
+    public interface IPowerManager : INotifyPropertyChanged, IDisposable
     {
         event Action<PowerPlugStatus> PowerSourceChanged;
 
@@ -100,6 +100,27 @@ namespace PowerSwitcher
         {
             PowerSourceChanged?.Invoke(newStatus);
         }
+
+        #region IDisposable Support
+        private bool disposedValue = false; 
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposedValue) { return; }
+            if (disposing)
+            {
+                batteryWrapper.Dispose();
+            }
+
+            disposedValue = true;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            // GC.SuppressFinalize(this); //No destructor so isn't required (yet)
+        }
+        #endregion
 
 
     }

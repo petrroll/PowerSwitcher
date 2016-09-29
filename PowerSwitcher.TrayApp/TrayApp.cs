@@ -79,6 +79,8 @@ namespace PowerSwitcher.TrayApp
             _trayIcon.Visible = false;
             _trayIcon.Dispose();
 
+            powerManager.Dispose();
+
             System.Windows.Application.Current.Shutdown();
         }
 
