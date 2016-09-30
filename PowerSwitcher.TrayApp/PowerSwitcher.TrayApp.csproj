@@ -110,6 +110,18 @@
     <Resource Include="Tray.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <WindowsKitsRoot>$([MSBuild]::GetRegistryValueFromView('HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Kits\Installed Roots', 'KitsRoot10', null, RegistryView.Registry32, RegistryView.Default))</WindowsKitsRoot>
+    <WindowsKitsRoot Condition="'$(WindowsKitsRoot)' == ''">$([MSBuild]::GetRegistryValueFromView('HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows Kits\Installed Roots', 'KitsRoot', null, RegistryView.Registry32, RegistryView.Default))</WindowsKitsRoot>
+    <WindowsSDKTools Condition=" '$(WindowsSDKTools)' == '' And '$(Platform)' == 'AnyCPU' ">$(WindowsKitsRoot)bin\x64\</WindowsSDKTools>
+    <WindowsSDKTools Condition="'$(WindowsSDKTools)' == ''">$(WindowsKitsRoot)bin\$(Platform)\</WindowsSDKTools>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>PATH %25PATH%25$(WindowsSDKTools);
+cd $(SolutionDir)\PowerSwitcher.Appx
+.\PackageScript.bat
+</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
