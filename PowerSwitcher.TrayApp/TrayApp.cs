@@ -37,6 +37,7 @@ namespace PowerSwitcher.TrayApp
             _trayIcon.Icon = new System.Drawing.Icon(Application.GetResourceStream(new Uri("pack://application:,,,/PowerSwitcher.TrayApp;component/Tray.ico")).Stream);
             _trayIcon.Text = string.Concat("Power switcher");
             _trayIcon.Visible = true;
+
         }
 
         private void ContextMenu_Popup(object sender, EventArgs e)
