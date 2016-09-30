@@ -11,9 +11,9 @@ namespace PowerSwitcher.TrayApp
         T DeserializeOrDefault();
     }
 
-    public class ConfigurationManager<T> where T : class, new()
+    public class ConfigurationManagerXML<T> : IConfigurationManger<T> where T : class, new()
     {
-        public ConfigurationManager(string pathToFile)
+        public ConfigurationManagerXML(string pathToFile)
         {
             pathToConfigFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Petrroll", "PowerSwitcher", pathToFile);
         }
@@ -90,23 +90,25 @@ namespace PowerSwitcher.TrayApp
 
     public class ConfigurationInstance<T> where T : class, new()
     {
-        public T ConfigurationData { get; private set; }
+        public T Data { get; private set; }
 
         IConfigurationManger<T> configManager;
         public ConfigurationInstance(IConfigurationManger<T> configurationManager)
         {
             this.configManager = configurationManager;
-            this.ConfigurationData = configurationManager.DeserializeOrDefault();
+            this.Data = configurationManager.DeserializeOrDefault();
         }
 
-        public void Save() => configManager.SerializeConfiguration(ConfigurationData);
+        public void Save() => configManager.SerializeConfiguration(Data);
     }
 
 
     [Serializable]
-    public class ConfigurationData
+    public class PowerSwitcherSettings
     {
-
+        public bool AutomaticOnACSwitch { get; set; } = false;
+        public Guid AutomaticPlanGuidOnAC { get; set; } = new Guid("8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c");
+        public Guid AutomaticPlanGuidOffAC { get; set; } = new Guid("a1841308-3541-4fab-bc81-f71556f20b4a");
     }
 
 }
