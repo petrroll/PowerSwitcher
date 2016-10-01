@@ -27,40 +27,47 @@ namespace PowerSwitcher.TrayApp
             configuration = new ConfigurationInstance<PowerSwitcherSettings>(configurationManager);
 
             _trayIcon = new WF.NotifyIcon();
-            _trayIcon.ContextMenu = new WF.ContextMenu();
+            _trayIcon.MouseClick += TrayIcon_MouseClick;
 
-            _trayIcon.ContextMenu.MenuItems.Add("-");
+            var contextMenuRoot = new WF.ContextMenu();
+            contextMenuRoot.Popup += ContextMenu_Popup;
 
-            var settingsMenuHive = _trayIcon.ContextMenu.MenuItems.Add("Settings");
-            settingsMenuHive.Name = "settings";
+            _trayIcon.ContextMenu = contextMenuRoot;
 
-            var settingsOnACItem = settingsMenuHive.MenuItems.Add("Schema to switch to on AC");
+            var contextMenuRootItems = contextMenuRoot.MenuItems;
+            contextMenuRootItems.Add("-");
+
+            var contextMenuSettings = contextMenuRootItems.Add("Settings");
+            contextMenuSettings.Name = "settings";
+
+            var settingsOnACItem = contextMenuSettings.MenuItems.Add("Schema to switch to on AC");
             settingsOnACItem.Name = "settingsOnAC";
 
-            var settingsOffACItem = settingsMenuHive.MenuItems.Add("Schema to switch to off AC");
+            var settingsOffACItem = contextMenuSettings.MenuItems.Add("Schema to switch to off AC");
             settingsOffACItem.Name = "settingsOffAC";
 
-            var automaticSwitchItem = settingsMenuHive.MenuItems.Add("Automatic on/of AC switch");
+            var automaticSwitchItem = contextMenuSettings.MenuItems.Add("Automatic on/of AC switch");
             automaticSwitchItem.Checked = configuration.Data.AutomaticOnACSwitch;
-            automaticSwitchItem.Click += (sender, e) =>
-            {
-                configuration.Data.AutomaticOnACSwitch = !configuration.Data.AutomaticOnACSwitch;
-                automaticSwitchItem.Checked = configuration.Data.AutomaticOnACSwitch;
-                configuration.Save();
-            };
+            automaticSwitchItem.Click += AutomaticSwitchItem_Click;
 
-            var aboutItem = _trayIcon.ContextMenu.MenuItems.Add("About");
+            var aboutItem = contextMenuRootItems.Add("About");
             aboutItem.Click += About_Click;
 
-            var exitItem = _trayIcon.ContextMenu.MenuItems.Add("Exit");
+            var exitItem = contextMenuRootItems.Add("Exit");
             exitItem.Click += Exit_Click;
 
-            _trayIcon.MouseClick += TrayIcon_MouseClick;
-            _trayIcon.ContextMenu.Popup += ContextMenu_Popup;
             _trayIcon.Icon = new System.Drawing.Icon(Application.GetResourceStream(new Uri("pack://application:,,,/PowerSwitcher.TrayApp;component/Tray.ico")).Stream);
             _trayIcon.Text = string.Concat("Power switcher");
             _trayIcon.Visible = true;
+        }
 
+        private void AutomaticSwitchItem_Click(object sender, EventArgs e)
+        {
+            WF.MenuItem automaticSwitchItem = (WF.MenuItem)sender;
+
+            configuration.Data.AutomaticOnACSwitch = !configuration.Data.AutomaticOnACSwitch;
+            automaticSwitchItem.Checked = configuration.Data.AutomaticOnACSwitch;
+            configuration.Save();
         }
 
         private void PowerManager_PowerSourceChanged(PowerPlugStatus currentPowerPlugStatus)
@@ -100,35 +107,42 @@ namespace PowerSwitcher.TrayApp
                 }
             }
 
-            for(int i = _trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsOffAC"].MenuItems.Count - 1; i >= 0; i--)
-            {
-                _trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsOffAC"].MenuItems.Remove(_trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsOffAC"].MenuItems[i]);
-                _trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsOnAC"].MenuItems.Remove(_trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsOnAC"].MenuItems[i]);
-            }
+            _trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsOffAC"].MenuItems.Clear();
+            _trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsOnAC"].MenuItems.Clear();
 
             foreach (var powerSchema in powerManager.PowerSchemas)
             {
-                var newItemMain = new WF.MenuItem(powerSchema.Name);
-
-                newItemMain.Click += (s, ea) => { powerManager.SetPowerSchema(powerSchema); };
-                newItemMain.Name = $"pwrScheme{powerSchema.Guid}";
-                newItemMain.Checked = powerSchema.IsActive;
+                var newItemMain = getNewPowerSchemaItem(powerSchema, 
+                    (s, ea) => { powerManager.SetPowerSchema(powerSchema); }, 
+                    powerSchema.IsActive
+                    );
                 _trayIcon.ContextMenu.MenuItems.Add(0, newItemMain);
 
-                var newItemSettingsOffAC = new WF.MenuItem(powerSchema.Name);
-
-                newItemSettingsOffAC.Click += (s, ea) => { configuration.Data.AutomaticPlanGuidOffAC = powerSchema.Guid; configuration.Save(); };
-                newItemSettingsOffAC.Name = $"pwrScheme{powerSchema.Guid}";
-                newItemSettingsOffAC.Checked = (powerSchema.Guid == configuration.Data.AutomaticPlanGuidOffAC);
+                var newItemSettingsOffAC = getNewPowerSchemaItem(
+                    powerSchema,
+                    (s, ea) => { configuration.Data.AutomaticPlanGuidOffAC = powerSchema.Guid; configuration.Save(); },
+                    (powerSchema.Guid == configuration.Data.AutomaticPlanGuidOffAC)
+                    );
                 _trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsOffAC"].MenuItems.Add(0, newItemSettingsOffAC);
 
-                var newItemSettingsOnAC = new WF.MenuItem(powerSchema.Name);
+                var newItemSettingsOnAC = getNewPowerSchemaItem(
+                    powerSchema,
+                    (s, ea) => { configuration.Data.AutomaticPlanGuidOnAC = powerSchema.Guid; configuration.Save(); },
+                    (powerSchema.Guid == configuration.Data.AutomaticPlanGuidOnAC)
+                    );
 
-                newItemSettingsOnAC.Click += (s, ea) => { configuration.Data.AutomaticPlanGuidOnAC = powerSchema.Guid; configuration.Save(); };
-                newItemSettingsOnAC.Name = $"pwrScheme{powerSchema.Guid}";
-                newItemSettingsOnAC.Checked = (powerSchema.Guid == configuration.Data.AutomaticPlanGuidOnAC);
                 _trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsOnAC"].MenuItems.Add(0, newItemSettingsOnAC);
             }
+        }
+
+        private WF.MenuItem getNewPowerSchemaItem(IPowerSchema powerSchema, EventHandler clickedHandler, bool isChecked)
+        {
+            var newItemMain = new WF.MenuItem(powerSchema.Name);
+            newItemMain.Name = $"pwrScheme{powerSchema.Guid}";
+            newItemMain.Checked = isChecked;
+            newItemMain.Click += clickedHandler;
+
+            return newItemMain;
         }
 
         void TrayIcon_MouseClick(object sender, WF.MouseEventArgs e)
@@ -151,7 +165,7 @@ namespace PowerSwitcher.TrayApp
 
             powerManager.Dispose();
 
-            System.Windows.Application.Current.Shutdown();
+            Application.Current.Shutdown();
         }
 
     }
