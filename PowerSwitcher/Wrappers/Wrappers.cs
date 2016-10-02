@@ -16,11 +16,11 @@ namespace PowerSwitcher.Wrappers
         Microsoft.Win32.PowerModeChangedEventHandler powerChangedDelegate = null;
         public BatteryInfoWrapper(Action<PowerPlugStatus> powerStatusChangedFunc)
         {
-            powerChangedDelegate = (sender, e) => { powerStatusChangedFunc(ChargingStatus()); };
+            powerChangedDelegate = (sender, e) => { powerStatusChangedFunc(GetCurrentChargingStatus()); };
             Microsoft.Win32.SystemEvents.PowerModeChanged += powerChangedDelegate;
         }
 
-        public PowerPlugStatus ChargingStatus()
+        public PowerPlugStatus GetCurrentChargingStatus()
         {
             PowerStatus pwrStatus = SystemInformation.PowerStatus;
             return (pwrStatus.PowerLineStatus == PowerLineStatus.Online) ? PowerPlugStatus.Online : PowerPlugStatus.Offline;

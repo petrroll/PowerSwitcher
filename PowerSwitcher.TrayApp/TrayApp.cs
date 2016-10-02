@@ -13,10 +13,13 @@ namespace PowerSwitcher.TrayApp
 
     class TrayApp
     {
+
+        #region PrivateObjects
         readonly WF.NotifyIcon _trayIcon;
         public event Action ShowFlyout;
         IPowerManager powerManager;
         ConfigurationInstance<PowerSwitcherSettings> configuration;
+        #endregion
 
         public TrayApp()
         {
@@ -61,6 +64,16 @@ namespace PowerSwitcher.TrayApp
             _trayIcon.Visible = true;
         }
 
+        void TrayIcon_MouseClick(object sender, WF.MouseEventArgs e)
+        {
+            if (e.Button == WF.MouseButtons.Left)
+            {
+                ShowFlyout?.Invoke();
+            }
+        }
+
+        #region AutomaticOnACSwitchRelated
+
         private void AutomaticSwitchItem_Click(object sender, EventArgs e)
         {
             WF.MenuItem automaticSwitchItem = (WF.MenuItem)sender;
@@ -94,10 +107,48 @@ namespace PowerSwitcher.TrayApp
             powerManager.SetPowerSchema(schemaToSwitchTo);
         }
 
+        #endregion
+
+        #region ContextMenuItemRelatedStuff
+
         private void ContextMenu_Popup(object sender, EventArgs e)
         {
-            powerManager.UpdateSchemas();
+            clearPowerSchemasInTray();
 
+            powerManager.UpdateSchemas();
+            foreach (var powerSchema in powerManager.PowerSchemas)
+            {
+                updateTrayMenuWithPowerSchema(powerSchema);
+            }
+        }
+
+        private void updateTrayMenuWithPowerSchema(IPowerSchema powerSchema)
+        {
+            var newItemMain = getNewPowerSchemaItem(
+                powerSchema,
+                (s, ea) => switchToPowerSchema(powerSchema),
+                powerSchema.IsActive
+                );
+            _trayIcon.ContextMenu.MenuItems.Add(0, newItemMain);
+
+            var newItemSettingsOffAC = getNewPowerSchemaItem(
+                powerSchema,
+                (s, ea) => setPowerSchemaAsOffAC(powerSchema),
+                (powerSchema.Guid == configuration.Data.AutomaticPlanGuidOffAC)
+                );
+            _trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsOffAC"].MenuItems.Add(0, newItemSettingsOffAC);
+
+            var newItemSettingsOnAC = getNewPowerSchemaItem(
+                powerSchema,
+                (s, ea) => setPowerSchemaAsOnAC(powerSchema),
+                (powerSchema.Guid == configuration.Data.AutomaticPlanGuidOnAC)
+                );
+
+            _trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsOnAC"].MenuItems.Add(0, newItemSettingsOnAC);
+        }
+
+        private void clearPowerSchemasInTray()
+        {
             for (int i = _trayIcon.ContextMenu.MenuItems.Count - 1; i >= 0; i--)
             {
                 var item = _trayIcon.ContextMenu.MenuItems[i];
@@ -109,30 +160,6 @@ namespace PowerSwitcher.TrayApp
 
             _trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsOffAC"].MenuItems.Clear();
             _trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsOnAC"].MenuItems.Clear();
-
-            foreach (var powerSchema in powerManager.PowerSchemas)
-            {
-                var newItemMain = getNewPowerSchemaItem(powerSchema, 
-                    (s, ea) => { powerManager.SetPowerSchema(powerSchema); }, 
-                    powerSchema.IsActive
-                    );
-                _trayIcon.ContextMenu.MenuItems.Add(0, newItemMain);
-
-                var newItemSettingsOffAC = getNewPowerSchemaItem(
-                    powerSchema,
-                    (s, ea) => { configuration.Data.AutomaticPlanGuidOffAC = powerSchema.Guid; configuration.Save(); },
-                    (powerSchema.Guid == configuration.Data.AutomaticPlanGuidOffAC)
-                    );
-                _trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsOffAC"].MenuItems.Add(0, newItemSettingsOffAC);
-
-                var newItemSettingsOnAC = getNewPowerSchemaItem(
-                    powerSchema,
-                    (s, ea) => { configuration.Data.AutomaticPlanGuidOnAC = powerSchema.Guid; configuration.Save(); },
-                    (powerSchema.Guid == configuration.Data.AutomaticPlanGuidOnAC)
-                    );
-
-                _trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsOnAC"].MenuItems.Add(0, newItemSettingsOnAC);
-            }
         }
 
         private WF.MenuItem getNewPowerSchemaItem(IPowerSchema powerSchema, EventHandler clickedHandler, bool isChecked)
@@ -145,13 +172,28 @@ namespace PowerSwitcher.TrayApp
             return newItemMain;
         }
 
-        void TrayIcon_MouseClick(object sender, WF.MouseEventArgs e)
+        #endregion
+
+        #region OnSchemaClickMethods
+        private void setPowerSchemaAsOffAC(IPowerSchema powerSchema)
         {
-            if (e.Button == WF.MouseButtons.Left)
-            {
-                ShowFlyout?.Invoke();
-            }
+            configuration.Data.AutomaticPlanGuidOffAC = powerSchema.Guid;
+            configuration.Save();
         }
+
+        private void setPowerSchemaAsOnAC(IPowerSchema powerSchema)
+        {
+            configuration.Data.AutomaticPlanGuidOnAC = powerSchema.Guid;
+            configuration.Save();
+        }
+
+        private void switchToPowerSchema(IPowerSchema powerSchema)
+        {
+            powerManager.SetPowerSchema(powerSchema);
+        }
+        #endregion
+
+        #region OtherItemsClicked
 
         void About_Click(object sender, EventArgs e)
         {
@@ -167,6 +209,7 @@ namespace PowerSwitcher.TrayApp
 
             Application.Current.Shutdown();
         }
+        #endregion
 
     }
 }
