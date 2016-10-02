@@ -19,6 +19,7 @@ namespace PowerSwitcher
     public interface IPowerManager : INotifyPropertyChanged, IDisposable
     {
         event Action<PowerPlugStatus> PowerSourceChanged;
+        PowerPlugStatus GetCurrentPowerPlugStatus();
 
         IEnumerable<IPowerSchema> PowerSchemas { get; }
         void UpdateSchemas();
@@ -125,6 +126,11 @@ namespace PowerSwitcher
         {
             Dispose(true);
             // GC.SuppressFinalize(this); //No destructor so isn't required (yet)
+        }
+
+        public PowerPlugStatus GetCurrentPowerPlugStatus()
+        {
+            return batteryWrapper.GetCurrentChargingStatus();
         }
         #endregion
 

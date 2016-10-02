@@ -63,6 +63,15 @@ namespace PowerSwitcher.TrayApp
             _trayIcon.Icon = new System.Drawing.Icon(Application.GetResourceStream(new Uri("pack://application:,,,/PowerSwitcher.TrayApp;component/Tray.ico")).Stream);
             _trayIcon.Text = string.Concat("Power switcher");
             _trayIcon.Visible = true;
+
+            //Run automatic on-off-AC change at boot
+            fireManualOnOffACEvent();
+        }
+
+        private void fireManualOnOffACEvent()
+        {
+            var currPowerPlugState = powerManager.GetCurrentPowerPlugStatus();
+            PowerManager_PowerSourceChanged(currPowerPlugState);
         }
         #endregion
 
@@ -84,6 +93,9 @@ namespace PowerSwitcher.TrayApp
 
             configuration.Data.AutomaticOnACSwitch = !configuration.Data.AutomaticOnACSwitch;
             automaticSwitchItem.Checked = configuration.Data.AutomaticOnACSwitch;
+
+            if (configuration.Data.AutomaticOnACSwitch) { fireManualOnOffACEvent(); }
+
             configuration.Save();
         }
 
