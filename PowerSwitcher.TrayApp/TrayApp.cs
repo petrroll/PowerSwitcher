@@ -21,6 +21,7 @@ namespace PowerSwitcher.TrayApp
         ConfigurationInstance<PowerSwitcherSettings> configuration;
         #endregion
 
+        #region Contructor
         public TrayApp()
         {
             powerManager = new PowerManager();
@@ -63,7 +64,9 @@ namespace PowerSwitcher.TrayApp
             _trayIcon.Text = string.Concat("Power switcher");
             _trayIcon.Visible = true;
         }
+        #endregion
 
+        #region FlyoutRelated
         void TrayIcon_MouseClick(object sender, WF.MouseEventArgs e)
         {
             if (e.Button == WF.MouseButtons.Left)
@@ -71,6 +74,7 @@ namespace PowerSwitcher.TrayApp
                 ShowFlyout?.Invoke();
             }
         }
+        #endregion
 
         #region AutomaticOnACSwitchRelated
 
