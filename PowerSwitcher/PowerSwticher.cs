@@ -36,11 +36,13 @@ namespace PowerSwitcher
         public Guid Guid { get; }
         public bool IsActive { get; set; }
 
-        public PowerSchema(string name, Guid guid)
+        public PowerSchema(string name, Guid guid) : this(name, guid, false) { }
+
+        public PowerSchema(string name, Guid guid, bool isActive)
         {
             this.Name = name;
             this.Guid = guid;
-            this.IsActive = false;
+            this.IsActive = isActive;
         }
     }
 

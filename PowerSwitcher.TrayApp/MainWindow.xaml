@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PowerSwitcher.TrayApp"
+        xmlns:viewModels="clr-namespace:PowerSwitcher.TrayApp.ViewModels"
         xmlns:ext="clr-namespace:PowerSwitcher.TrayApp.Extensions"
         mc:Ignorable="d"
         Title="Power switcher" 
@@ -61,8 +62,11 @@
         </Style>
     </Window.Resources>
     <Window.DataContext>
-        <local:MainWindowViewModel x:Name="ViewModel"/>
+        <viewModels:MainWindowViewModel x:Name="ViewModel"/>
     </Window.DataContext>
+    <d:Window.DataContext>
+        <viewModels:MainWindowViewModelDesign/>
+    </d:Window.DataContext>
 
     <ScrollViewer x:Name="LayoutRoot"
             VerticalScrollBarVisibility="Auto"

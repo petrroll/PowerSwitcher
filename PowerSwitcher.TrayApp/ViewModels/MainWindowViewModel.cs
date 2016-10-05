@@ -3,7 +3,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace PowerSwitcher.TrayApp
+namespace PowerSwitcher.TrayApp.ViewModels
 {
     public class MainWindowViewModel : ObservableObject
     {
