@@ -78,12 +78,13 @@ namespace PowerSwitcher
 
         public void SetPowerSchema(IPowerSchema schema)
         {
-            powerWraper.SetActiveGuid(schema.Guid);
+            SetPowerSchema(schema.Guid);
         }
 
         public void SetPowerSchema(Guid guid)
         {
             powerWraper.SetActiveGuid(guid);
+            UpdateSchemas();
         }
 
         public IPowerSchema GetCurrentSchema()

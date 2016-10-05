@@ -28,33 +28,30 @@
         PreviewKeyDown="Window_PreviewKeyDown"
         >
     <Window.Resources>
-        <SolidColorBrush x:Key="WindowForeground"
-                         Color="Black" />
-        <SolidColorBrush x:Key="WindowBackground"
-                         Color="White" />
-        <SolidColorBrush x:Key="CottonSwabSliderTrackBackground"
-                         Color="#39FFFFFF" />
-        <SolidColorBrush x:Key="CottonSwabSliderThumb"
-                         Color="#FF339933" />
-        <SolidColorBrush x:Key="HeaderBackground"
-                         Color="#FFFFFFFF" />
-        <SolidColorBrush x:Key="CottonSwabSliderThumbHover"
-                         Color="Red" />
-        <SolidColorBrush x:Key="CottonSwabSliderThumbPressed"
-                         Color="Yellow" />
-        <SolidColorBrush x:Key="CottonSwabSliderTrackFill"
-                         Color="#FF339933" />
-        <Style TargetType="{x:Type Button}">
-            <Setter Property="Height" Value="40"/>
+        <SolidColorBrush x:Key="WindowForeground" Color="Black" />
+        <SolidColorBrush x:Key="WindowBackground" Color="White" />
+        <SolidColorBrush x:Key="CottonSwabSliderTrackBackground" Color="#39FFFFFF" />
+        <SolidColorBrush x:Key="CottonSwabSliderThumb" Color="#FF339933" />
+        <SolidColorBrush x:Key="HeaderBackground" Color="#FFFFFFFF" />
+        <SolidColorBrush x:Key="CottonSwabSliderThumbHover" Color="Red" />
+        <SolidColorBrush x:Key="CottonSwabSliderThumbPressed" Color="Yellow" />
+        <SolidColorBrush x:Key="CottonSwabSliderTrackFill" Color="#FF339933" />
+
+        <Style TargetType="ListBox">
+            <Setter Property="Border.Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource WindowForeground}"/>
+            <Setter Property="Padding" Value="10, 10, 20, 20"/>
+        </Style>
+        <Style TargetType="{x:Type Label}">
+            <Setter Property="Height" Value="30"/>
             <Setter Property="OverridesDefaultStyle" Value="true" />
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type Button}">
+                    <ControlTemplate TargetType="{x:Type Label}">
                         <Border Background="Transparent">
-                            <Label VerticalAlignment="Center" HorizontalAlignment="Left" Margin="20, 0, 0, 0"  Content="{Binding Content, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" />
-                            <!-- Leaving it here if I wanted to get back to general content
-                            <ContentPresenter Content="{Binding Path=Content, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"/>
-                            -->
+                            <TextBlock FontSize="15" TextWrapping="NoWrap" FontFamily="Segoe UI" VerticalAlignment="Center" Text="{Binding Content, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Label}}}" />
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
@@ -75,10 +72,10 @@
             Focusable="False"
             Margin="0"
             >
-        <ListBox ItemsSource="{Binding Schemas}">
+        <ListBox SelectionMode="Single" ItemsSource="{Binding Schemas}" SelectedItem="{Binding ActiveSchema}"  >
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Button Content="{Binding Name}" Tag="{Binding Guid}" Click="Button_Click" />
+                    <Label Content="{Binding Name}" Tag="{Binding Guid}" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>

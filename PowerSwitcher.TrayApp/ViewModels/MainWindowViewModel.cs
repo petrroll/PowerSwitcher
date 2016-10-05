@@ -9,6 +9,12 @@ namespace PowerSwitcher.TrayApp.ViewModels
     {
         public ObservableCollection<IPowerSchema> Schemas { get; private set; }
 
+        public IPowerSchema ActiveSchema
+        {
+            get { return Schemas.FirstOrDefault(sch => sch.IsActive); }
+            set { if (value != null) { pwrManager.SetPowerSchema(value); } }
+        }
+
         private IPowerManager pwrManager;
         public MainWindowViewModel()
         {
@@ -28,6 +34,8 @@ namespace PowerSwitcher.TrayApp.ViewModels
             {
                 Schemas.Clear();
                 pwrManager.PowerSchemas.ForEach(sch => Schemas.Add(sch));
+
+                RaisePropertyChangedEvent(nameof(ActiveSchema));        
             }
             else
             {
