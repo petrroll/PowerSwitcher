@@ -11,6 +11,7 @@ namespace PowerSwitcher.TrayApp.ViewModels
             new PowerSchema("Balanced (recommended)", Guid.Empty),
             new PowerSchema("Power saver", Guid.Empty),
             new PowerSchema("Časovače vypnuty (prezentace)", Guid.Empty),
+            new PowerSchema("Lorem Ipsum is simply dummy text of the printing and typesetting industry.", Guid.Empty),
         };
     }
 }
