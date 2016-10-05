@@ -60,6 +60,9 @@
             </Setter>
         </Style>
     </Window.Resources>
+    <Window.DataContext>
+        <local:MainWindowViewModel x:Name="ViewModel"/>
+    </Window.DataContext>
 
     <ScrollViewer x:Name="LayoutRoot"
             VerticalScrollBarVisibility="Auto"

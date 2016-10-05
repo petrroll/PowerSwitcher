@@ -26,17 +26,11 @@ namespace PowerSwitcher.TrayApp
     /// </summary>
     public partial class MainWindow : Window
     {
-        //IPowerManager pwrManager;
-        MainWindowViewModel viewModel;
-
         public MainWindow()
         {
             InitializeComponent();
 
             ((App)Application.Current).TrayApp.ShowFlyout += TrayApp_ShowFlyout;
-
-            viewModel = new MainWindowViewModel();
-            DataContext = viewModel;
         
             createAndHideWindow();
 
@@ -134,7 +128,7 @@ namespace PowerSwitcher.TrayApp
         {
             var clickedButton = sender as Button;
             Guid guid = (Guid)clickedButton.Tag;
-            viewModel.SetGuidAsActive(guid);
+            ViewModel.SetGuidAsActive(guid);
         }
     }
 }
