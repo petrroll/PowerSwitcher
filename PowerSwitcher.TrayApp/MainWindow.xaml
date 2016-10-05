@@ -4,9 +4,77 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PowerSwitcher.TrayApp"
+        xmlns:ext="clr-namespace:PowerSwitcher.TrayApp.Extensions"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-    <Grid>
+        Title="Power switcher" 
+        Topmost="True"
+        ShowInTaskbar="False"
+        AllowsTransparency="True"
+        SnapsToDevicePixels="True"
+        UseLayoutRounding="True"
+        WindowStyle="None"
+		ResizeMode="NoResize"
         
-    </Grid>
+        Icon="Tray.ico"
+        MaxHeight="600" 
+        Width="360"
+        
+        Foreground="{DynamicResource WindowForeground}"
+        Background="{DynamicResource WindowBackground}"
+    
+        x:Name="SchemasWindow"
+        Deactivated="Window_Deactivated"
+        PreviewKeyDown="Window_PreviewKeyDown"
+        >
+    <Window.Resources>
+        <SolidColorBrush x:Key="WindowForeground"
+                         Color="Black" />
+        <SolidColorBrush x:Key="WindowBackground"
+                         Color="White" />
+        <SolidColorBrush x:Key="CottonSwabSliderTrackBackground"
+                         Color="#39FFFFFF" />
+        <SolidColorBrush x:Key="CottonSwabSliderThumb"
+                         Color="#FF339933" />
+        <SolidColorBrush x:Key="HeaderBackground"
+                         Color="#FFFFFFFF" />
+        <SolidColorBrush x:Key="CottonSwabSliderThumbHover"
+                         Color="Red" />
+        <SolidColorBrush x:Key="CottonSwabSliderThumbPressed"
+                         Color="Yellow" />
+        <SolidColorBrush x:Key="CottonSwabSliderTrackFill"
+                         Color="#FF339933" />
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="OverridesDefaultStyle" Value="true" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Background="Transparent">
+                            <Label VerticalAlignment="Center" HorizontalAlignment="Left" Margin="20, 0, 0, 0"  Content="{Binding Content, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}" />
+                            <!-- Leaving it here if I wanted to get back to general content
+                            <ContentPresenter Content="{Binding Path=Content, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}"/>
+                            -->
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <ScrollViewer x:Name="LayoutRoot"
+            VerticalScrollBarVisibility="Auto"
+            CanContentScroll="True"
+            PanningMode="VerticalOnly"
+            Focusable="False"
+            Margin="0"
+            >
+        <ListBox ItemsSource="{Binding Schemas}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Button Content="{Binding Name}" Tag="{Binding Guid}" Click="Button_Click" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </ScrollViewer>
+
 </Window>

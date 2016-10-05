@@ -27,6 +27,7 @@ namespace PowerSwitcher
         void SetPowerSchema(IPowerSchema schema);
         IPowerSchema GetCurrentSchema();
         IPowerSchema GetSchemaToGuid(Guid guid);
+        void SetPowerSchema(Guid guid);
     }
 
     public class PowerSchema : IPowerSchema
@@ -76,6 +77,11 @@ namespace PowerSwitcher
         public void SetPowerSchema(IPowerSchema schema)
         {
             powerWraper.SetActiveGuid(schema.Guid);
+        }
+
+        public void SetPowerSchema(Guid guid)
+        {
+            powerWraper.SetActiveGuid(guid);
         }
 
         public IPowerSchema GetCurrentSchema()
@@ -132,6 +138,7 @@ namespace PowerSwitcher
         {
             return batteryWrapper.GetCurrentChargingStatus();
         }
+
         #endregion
 
 

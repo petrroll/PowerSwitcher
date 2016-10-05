@@ -16,7 +16,8 @@ namespace PowerSwitcher.TrayApp
     /// </summary>
     public partial class App : Application
     {
-
+        public IPowerManager PowerManager { get; private set; }
+        public TrayApp TrayApp { get; private set; }
 
         private Mutex _mMutex;
         private void Application_Startup(object sender, StartupEventArgs e)
@@ -35,9 +36,9 @@ namespace PowerSwitcher.TrayApp
                 return;
             }
 
-#pragma warning disable RECS0026 // Possible unassigned object created by 'new'
-            new MainWindow();
-#pragma warning restore RECS0026 // Possible unassigned object created by 'new'
+            PowerManager = new PowerManager();
+            TrayApp = new TrayApp(PowerManager);
+            MainWindow = new MainWindow();
         }
 
 

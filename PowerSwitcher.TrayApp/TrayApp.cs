@@ -11,21 +11,21 @@ using WF = System.Windows.Forms;
 namespace PowerSwitcher.TrayApp
 {
 
-    class TrayApp
+    public class TrayApp
     {
 
         #region PrivateObjects
         readonly WF.NotifyIcon _trayIcon;
         public event Action ShowFlyout;
-        IPowerManager powerManager;
+        IPowerManager pwrManager;
         ConfigurationInstance<PowerSwitcherSettings> configuration;
         #endregion
 
         #region Contructor
-        public TrayApp()
+        public TrayApp(IPowerManager powerManager)
         {
-            powerManager = new PowerManager();
-            powerManager.PowerSourceChanged += PowerManager_PowerSourceChanged;
+            this.pwrManager = powerManager;
+            pwrManager.PowerSourceChanged += PowerManager_PowerSourceChanged;
 
             var configurationManager = new ConfigurationManagerXML<PowerSwitcherSettings>("PowerSwitcherSettings.xml");
             configuration = new ConfigurationInstance<PowerSwitcherSettings>(configurationManager);
@@ -70,7 +70,7 @@ namespace PowerSwitcher.TrayApp
 
         private void fireManualOnOffACEvent()
         {
-            var currPowerPlugState = powerManager.GetCurrentPowerPlugStatus();
+            var currPowerPlugState = pwrManager.GetCurrentPowerPlugStatus();
             PowerManager_PowerSourceChanged(currPowerPlugState);
         }
         #endregion
@@ -117,10 +117,10 @@ namespace PowerSwitcher.TrayApp
                     break;
             }
 
-            IPowerSchema schemaToSwitchTo = powerManager.GetSchemaToGuid(schemaGuidToSwitch);
+            IPowerSchema schemaToSwitchTo = pwrManager.GetSchemaToGuid(schemaGuidToSwitch);
             if(schemaToSwitchTo == null) { return; }
 
-            powerManager.SetPowerSchema(schemaToSwitchTo);
+            pwrManager.SetPowerSchema(schemaToSwitchTo);
         }
 
         #endregion
@@ -131,8 +131,8 @@ namespace PowerSwitcher.TrayApp
         {
             clearPowerSchemasInTray();
 
-            powerManager.UpdateSchemas();
-            foreach (var powerSchema in powerManager.PowerSchemas)
+            pwrManager.UpdateSchemas();
+            foreach (var powerSchema in pwrManager.PowerSchemas)
             {
                 updateTrayMenuWithPowerSchema(powerSchema);
             }
@@ -205,7 +205,7 @@ namespace PowerSwitcher.TrayApp
 
         private void switchToPowerSchema(IPowerSchema powerSchema)
         {
-            powerManager.SetPowerSchema(powerSchema);
+            pwrManager.SetPowerSchema(powerSchema);
         }
         #endregion
 
@@ -221,7 +221,7 @@ namespace PowerSwitcher.TrayApp
             _trayIcon.Visible = false;
             _trayIcon.Dispose();
 
-            powerManager.Dispose();
+            pwrManager.Dispose();
 
             Application.Current.Shutdown();
         }

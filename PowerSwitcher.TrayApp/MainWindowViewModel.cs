@@ -7,12 +7,12 @@ namespace PowerSwitcher.TrayApp
 {
     public class MainWindowViewModel : ObservableObject
     {
-        public ObservableCollection<IPowerSchema> Schemas;
+        public ObservableCollection<IPowerSchema> Schemas { get; private set; }
 
         private IPowerManager pwrManager;
-        public MainWindowViewModel(IPowerManager powerManager)
+        public MainWindowViewModel()
         {
-            this.pwrManager = powerManager;
+            this.pwrManager = ((App)System.Windows.Application.Current).PowerManager;
             pwrManager.PropertyChanged += PwrManager_PropertyChanged;
 
             Schemas = new ObservableCollection<IPowerSchema>(pwrManager.PowerSchemas);
@@ -30,6 +30,11 @@ namespace PowerSwitcher.TrayApp
             {
                 throw new InvalidOperationException("Invalid property changed on IPowerManager");
             }
+        }
+
+        public void SetGuidAsActive(Guid guid)
+        {
+            pwrManager.SetPowerSchema(guid);
         }
     }
 }
