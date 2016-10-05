@@ -27,6 +27,11 @@ namespace PowerSwitcher.TrayApp.ViewModels
             Schemas = new ObservableCollection<IPowerSchema>(pwrManager.PowerSchemas);
         }
 
+        public void Refresh()
+        {
+            pwrManager.UpdateSchemas();
+        }
+
         private void PwrManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             //TODO: Do better binding do underlying model

@@ -25,8 +25,6 @@ namespace PowerSwitcher
         void UpdateSchemas();
 
         void SetPowerSchema(IPowerSchema schema);
-        IPowerSchema GetCurrentSchema();
-        IPowerSchema GetSchemaToGuid(Guid guid);
         void SetPowerSchema(Guid guid);
     }
 
@@ -85,18 +83,6 @@ namespace PowerSwitcher
         {
             powerWraper.SetActiveGuid(guid);
             UpdateSchemas();
-        }
-
-        public IPowerSchema GetCurrentSchema()
-        {
-            UpdateSchemas();
-            return getCurrentSchemaWithoutUpdate();
-        }
-
-        public IPowerSchema GetSchemaToGuid(Guid guid)
-        {
-            UpdateSchemas();
-            return PowerSchemas.Where(sch => sch.Guid == guid).FirstOrDefault();
         }
 
         private PowerSchema getCurrentSchemaWithoutUpdate()

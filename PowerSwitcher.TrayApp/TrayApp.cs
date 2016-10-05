@@ -117,7 +117,7 @@ namespace PowerSwitcher.TrayApp
                     break;
             }
 
-            IPowerSchema schemaToSwitchTo = pwrManager.GetSchemaToGuid(schemaGuidToSwitch);
+            IPowerSchema schemaToSwitchTo = pwrManager.PowerSchemas.FirstOrDefault(sch => sch.Guid == schemaGuidToSwitch);
             if(schemaToSwitchTo == null) { return; }
 
             pwrManager.SetPowerSchema(schemaToSwitchTo);

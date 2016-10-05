@@ -59,7 +59,7 @@ namespace PowerSwitcher.TrayApp
             }
             else
             {
-                //_viewModel.Refresh();
+                ViewModel.Refresh();
                 UpdateTheme();
                 UpdateWindowPosition();
                 this.ShowWithAnimation();
