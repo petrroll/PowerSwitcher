@@ -12,7 +12,10 @@ namespace PowerSwitcher.TrayApp
         private IPowerManager pwrManager;
         public MainWindowViewModel()
         {
-            this.pwrManager = ((App)System.Windows.Application.Current).PowerManager;
+            App currApp = System.Windows.Application.Current as App;
+            if (currApp == null) { return; }
+
+            this.pwrManager = currApp.PowerManager;
             pwrManager.PropertyChanged += PwrManager_PropertyChanged;
 
             Schemas = new ObservableCollection<IPowerSchema>(pwrManager.PowerSchemas);
