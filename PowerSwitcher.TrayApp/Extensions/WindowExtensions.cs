@@ -37,7 +37,7 @@ namespace PowerSwitcher.TrayApp.Extensions
                         hideAnimation.From = window.Top;
                         break;
                 }
-                hideAnimation.To = (taskbarPosition == TaskbarPosition.Top || taskbarPosition == TaskbarPosition.Left) ? hideAnimation.From - 10 : hideAnimation.From + 10;
+                hideAnimation.To = (taskbarPosition == TaskbarPosition.Top || taskbarPosition == TaskbarPosition.Left) ? hideAnimation.From - 30 : hideAnimation.From + 30;
                 hideAnimation.Completed += (s, e) =>
                 {
                     window.Visibility = Visibility.Hidden;
@@ -89,7 +89,7 @@ namespace PowerSwitcher.TrayApp.Extensions
                         showAnimation.To = window.Top;
                         break;
                 }
-                showAnimation.From = (taskbarPosition == TaskbarPosition.Top || taskbarPosition == TaskbarPosition.Left) ? showAnimation.To - 25 : showAnimation.To + 25;
+                showAnimation.From = (taskbarPosition == TaskbarPosition.Top || taskbarPosition == TaskbarPosition.Left) ? showAnimation.To - 60 : showAnimation.To + 60;
                 showAnimation.Completed += (s, e) =>
                 {
                     window.Topmost = true;
