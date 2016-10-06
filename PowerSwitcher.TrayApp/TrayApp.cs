@@ -22,13 +22,12 @@ namespace PowerSwitcher.TrayApp
         #endregion
 
         #region Contructor
-        public TrayApp(IPowerManager powerManager)
+        public TrayApp(IPowerManager powerManager, ConfigurationInstance<PowerSwitcherSettings> config)
         {
             this.pwrManager = powerManager;
             pwrManager.PowerSourceChanged += PowerManager_PowerSourceChanged;
 
-            var configurationManager = new ConfigurationManagerXML<PowerSwitcherSettings>("PowerSwitcherSettings.xml");
-            configuration = new ConfigurationInstance<PowerSwitcherSettings>(configurationManager);
+            configuration = config;
 
             _trayIcon = new WF.NotifyIcon();
             _trayIcon.MouseClick += TrayIcon_MouseClick;
@@ -53,6 +52,10 @@ namespace PowerSwitcher.TrayApp
             var automaticSwitchItem = contextMenuSettings.MenuItems.Add("Automatic on/of AC switch");
             automaticSwitchItem.Checked = configuration.Data.AutomaticOnACSwitch;
             automaticSwitchItem.Click += AutomaticSwitchItem_Click;
+
+            var automaticHideItem = contextMenuSettings.MenuItems.Add("Automaticly hide flyout after schema change");
+            automaticHideItem.Checked = configuration.Data.AutomaticFlyoutHideAfterClick;
+            automaticHideItem.Click += AutomaticHideItem_Click;
 
             var aboutItem = contextMenuRootItems.Add("About");
             aboutItem.Click += About_Click;
@@ -86,6 +89,16 @@ namespace PowerSwitcher.TrayApp
         #endregion
 
         #region AutomaticOnACSwitchRelated
+
+        private void AutomaticHideItem_Click(object sender, EventArgs e)
+        {
+            WF.MenuItem automaticHideItem = (WF.MenuItem)sender;
+
+            configuration.Data.AutomaticFlyoutHideAfterClick = !configuration.Data.AutomaticFlyoutHideAfterClick;
+            automaticHideItem.Checked = configuration.Data.AutomaticFlyoutHideAfterClick;
+
+            configuration.Save();
+        }
 
         private void AutomaticSwitchItem_Click(object sender, EventArgs e)
         {

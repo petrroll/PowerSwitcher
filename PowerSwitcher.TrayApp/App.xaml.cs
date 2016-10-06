@@ -18,6 +18,7 @@ namespace PowerSwitcher.TrayApp
     {
         public IPowerManager PowerManager { get; private set; }
         public TrayApp TrayApp { get; private set; }
+        public ConfigurationInstance<PowerSwitcherSettings> Configuration { get; private set; }
 
         private Mutex _mMutex;
         private void Application_Startup(object sender, StartupEventArgs e)
@@ -36,8 +37,11 @@ namespace PowerSwitcher.TrayApp
                 return;
             }
 
+            var configurationManager = new ConfigurationManagerXML<PowerSwitcherSettings>("PowerSwitcherSettings.xml");
+            Configuration = new ConfigurationInstance<PowerSwitcherSettings>(configurationManager);
+
             PowerManager = new PowerManager();
-            TrayApp = new TrayApp(PowerManager);
+            TrayApp = new TrayApp(PowerManager, Configuration);
             MainWindow = new MainWindow();
         }
 

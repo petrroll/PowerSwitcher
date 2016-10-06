@@ -109,10 +109,10 @@
             Focusable="False"
             Margin="0"
             >
-        <ListBox SelectionMode="Single" ItemsSource="{Binding Schemas}" SelectedItem="{Binding ActiveSchema}"  >
+        <ListBox SelectionMode="Single" ItemsSource="{Binding Schemas}" SelectedItem="{Binding ActiveSchema}" >
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <Label Content="{Binding Name}" Tag="{Binding Guid}" />
+                    <Label Content="{Binding Name}" Tag="{Binding Guid}" MouseLeftButtonDown="Label_MouseLeftButtonDown" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>

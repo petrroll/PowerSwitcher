@@ -124,5 +124,16 @@ namespace PowerSwitcher.TrayApp
         }
         #endregion
 
+        private void Label_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var currApp = Application.Current as App;
+            if (currApp == null) { return; }
+
+            var config = currApp.Configuration;
+            if (config.Data.AutomaticFlyoutHideAfterClick)
+            {
+                this.HideWithAnimation();
+            }
+        }
     }
 }
