@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using PowerSwitcher.TrayApp.Configuration;
+using System;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using WF = System.Windows.Forms;
 

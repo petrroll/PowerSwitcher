@@ -92,7 +92,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Configuration.cs" />
+    <Compile Include="Configuration\Configuration.cs" />
+    <Compile Include="Configuration\PowerSwitcherConfiguration.cs" />
     <Compile Include="Extensions\BlurWindowExtensions.cs" />
     <Compile Include="Extensions\Helpers.cs" />
     <Compile Include="Extensions\InvertableVisibilityConvertor.cs" />
