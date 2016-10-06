@@ -11,8 +11,6 @@ namespace PowerSwitcher
     {
         PowProfWrapper powerWraper;
         BatteryInfoWrapper batteryWrapper;
-        //WmiPowerSchemesWrapper powerSchemesWrapper;
-
 
         public IEnumerable<IPowerSchema> PowerSchemas { get; private set; }
         public event PropertyChangedEventHandler PropertyChanged;
@@ -22,7 +20,6 @@ namespace PowerSwitcher
         {
             powerWraper = new PowProfWrapper();
             batteryWrapper = new BatteryInfoWrapper(powerChangedEvent);
-            //powerSchemesWrapper = new WmiPowerSchemesWrapper();
 
             UpdateSchemas();
         }
@@ -81,7 +78,9 @@ namespace PowerSwitcher
         public void Dispose()
         {
             Dispose(true);
-            // GC.SuppressFinalize(this); //No destructor so isn't required (yet)
+
+            //No destructor so isn't required (yet)            
+            // GC.SuppressFinalize(this); 
         }
 
         public PowerPlugStatus GetCurrentPowerPlugStatus()
