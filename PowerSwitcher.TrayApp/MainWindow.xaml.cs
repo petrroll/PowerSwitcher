@@ -124,11 +124,5 @@ namespace PowerSwitcher.TrayApp
         }
         #endregion
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            var clickedButton = sender as Button;
-            Guid guid = (Guid)clickedButton.Tag;
-            ViewModel.SetGuidAsActive(guid);
-        }
     }
 }
