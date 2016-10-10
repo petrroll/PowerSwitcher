@@ -21,7 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{E432A9
 	ProjectSection(SolutionItems) = preProject
 		PowerSwitcher.Assets\Square150x150Logo.png = PowerSwitcher.Assets\Square150x150Logo.png
 		PowerSwitcher.Assets\Square44x44Logo.png = PowerSwitcher.Assets\Square44x44Logo.png
-		PowerSwitcher.Assets\StoreLogo.png = PowerSwitcher.Assets\StoreLogo.png
+		PowerSwitcher.Assets\StoreLogo50x50.png = PowerSwitcher.Assets\StoreLogo50x50.png
 	EndProjectSection
 EndProject
 Global

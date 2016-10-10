@@ -12,7 +12,7 @@
     <DisplayName>PowerSwitcher</DisplayName>
     <PublisherDisplayName>Petrroll</PublisherDisplayName>
     <Description>Switch Windows power plans with ease!</Description>
-    <Logo>Assets\StoreLogo.png</Logo>
+    <Logo>Assets\StoreLogo50x50.png</Logo>
   </Properties>
   <Resources>
     <Resource Language="en-us" />
