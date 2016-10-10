@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 
 namespace PowerSwitcher
 {
@@ -11,18 +9,6 @@ namespace PowerSwitcher
         string Name { get; }
         Guid Guid { get; }
         bool IsActive { get; }
-    }
-
-    public interface IPowerManager : INotifyPropertyChanged, IDisposable
-    {
-        event Action<PowerPlugStatus> PowerSourceChanged;
-        PowerPlugStatus GetCurrentPowerPlugStatus();
-
-        IEnumerable<IPowerSchema> PowerSchemas { get; }
-        void UpdateSchemas();
-
-        void SetPowerSchema(IPowerSchema schema);
-        void SetPowerSchema(Guid guid);
     }
 
     public class PowerSchema : IPowerSchema

@@ -7,6 +7,18 @@ using System.Linq;
 
 namespace PowerSwitcher
 {
+    public interface IPowerManager : INotifyPropertyChanged, IDisposable
+    {
+        event Action<PowerPlugStatus> PowerSourceChanged;
+        PowerPlugStatus GetCurrentPowerPlugStatus();
+
+        IEnumerable<IPowerSchema> PowerSchemas { get; }
+        void UpdateSchemas();
+
+        void SetPowerSchema(IPowerSchema schema);
+        void SetPowerSchema(Guid guid);
+    }
+
     public class PowerManager : IPowerManager
     {
         PowProfWrapper powerWraper;
