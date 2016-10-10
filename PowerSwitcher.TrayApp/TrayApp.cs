@@ -224,7 +224,7 @@ namespace PowerSwitcher.TrayApp
 
         void About_Click(object sender, EventArgs e)
         {
-            Process.Start("http://github.com/File-New-Project/EarTrumpet");
+            Process.Start("http://github.com/Petrroll/PowerSwitcher");
         }
 
         void Exit_Click(object sender, EventArgs e)
