@@ -17,7 +17,7 @@ namespace PowerSwitcher.TrayApp.Services
         {
             dictionary["WindowBackground"] = new SolidColorBrush(GetWindowBackgroundColor());
 
-            SetBrush(dictionary, "WindowForeground", "ImmersiveApplicationTextDarkTheme"); 
+            ReplaceBrush(dictionary, "WindowForeground", "ImmersiveApplicationTextDarkTheme"); 
             ReplaceBrushWithOpacity(dictionary, "SelectedItemBackground", "ImmersiveSystemAccent", 0.5);
             ReplaceBrushWithOpacity(dictionary, "MouseOverSelectedItemBackground", "ImmersiveSystemAccent", 0.75);
             ReplaceBrushWithOpacity(dictionary, "MouseOverItemBackground", "ImmersiveControlLightSelectHighlightSelectedHover", 0.3);
