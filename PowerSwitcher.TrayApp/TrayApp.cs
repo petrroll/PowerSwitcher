@@ -1,4 +1,5 @@
 ﻿using PowerSwitcher.TrayApp.Configuration;
+using PowerSwitcher.TrayApp.Resources;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -38,31 +39,31 @@ namespace PowerSwitcher.TrayApp
             var contextMenuRootItems = contextMenuRoot.MenuItems;
             contextMenuRootItems.Add("-");
 
-            var contextMenuSettings = contextMenuRootItems.Add("Settings");
+            var contextMenuSettings = contextMenuRootItems.Add(AppStrings.Settings);
             contextMenuSettings.Name = "settings";
 
-            var settingsOnACItem = contextMenuSettings.MenuItems.Add("Schema to switch to on AC");
+            var settingsOnACItem = contextMenuSettings.MenuItems.Add(AppStrings.SchemaToSwitchOnAc);
             settingsOnACItem.Name = "settingsOnAC";
 
-            var settingsOffACItem = contextMenuSettings.MenuItems.Add("Schema to switch to off AC");
+            var settingsOffACItem = contextMenuSettings.MenuItems.Add(AppStrings.SchemaToSwitchOffAc);
             settingsOffACItem.Name = "settingsOffAC";
 
-            var automaticSwitchItem = contextMenuSettings.MenuItems.Add("Automatic on/of AC switch");
+            var automaticSwitchItem = contextMenuSettings.MenuItems.Add(AppStrings.AutomaticOnOffACSwitch);
             automaticSwitchItem.Checked = configuration.Data.AutomaticOnACSwitch;
             automaticSwitchItem.Click += AutomaticSwitchItem_Click;
 
-            var automaticHideItem = contextMenuSettings.MenuItems.Add("Automaticly hide flyout after schema change");
+            var automaticHideItem = contextMenuSettings.MenuItems.Add(AppStrings.HideFlyoutAfterSchemaChangeSwitch);
             automaticHideItem.Checked = configuration.Data.AutomaticFlyoutHideAfterClick;
             automaticHideItem.Click += AutomaticHideItem_Click;
 
-            var aboutItem = contextMenuRootItems.Add("About");
+            var aboutItem = contextMenuRootItems.Add(AppStrings.About);
             aboutItem.Click += About_Click;
 
-            var exitItem = contextMenuRootItems.Add("Exit");
+            var exitItem = contextMenuRootItems.Add(AppStrings.Exit);
             exitItem.Click += Exit_Click;
 
             _trayIcon.Icon = new System.Drawing.Icon(Application.GetResourceStream(new Uri("pack://application:,,,/PowerSwitcher.TrayApp;component/Tray.ico")).Stream);
-            _trayIcon.Text = string.Concat("Power switcher");
+            _trayIcon.Text = string.Concat(AppStrings.AppName);
             _trayIcon.Visible = true;
 
             //Run automatic on-off-AC change at boot
@@ -224,7 +225,7 @@ namespace PowerSwitcher.TrayApp
 
         void About_Click(object sender, EventArgs e)
         {
-            Process.Start("http://github.com/Petrroll/PowerSwitcher");
+            Process.Start(AppStrings.AboutAppURL);
         }
 
         void Exit_Click(object sender, EventArgs e)
