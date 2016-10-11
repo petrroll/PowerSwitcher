@@ -31,32 +31,33 @@ namespace PowerSwitcher.TrayApp
             _trayIcon = new WF.NotifyIcon();
             _trayIcon.MouseClick += TrayIcon_MouseClick;
 
-            var contextMenuRoot = new WF.ContextMenu();
-            contextMenuRoot.Popup += ContextMenu_Popup;
+            var contextMenuRoot = new WF.ContextMenuStrip();
+            contextMenuRoot.Opening += ContextMenu_Popup;
 
-            _trayIcon.ContextMenu = contextMenuRoot;
+            _trayIcon.ContextMenuStrip = contextMenuRoot;
 
-            var contextMenuRootItems = contextMenuRoot.MenuItems;
+            var contextMenuRootItems = contextMenuRoot.Items;
             contextMenuRootItems.Add("-");
 
-            var contextMenuSettings = contextMenuRootItems.Add(AppStrings.Settings);
+            var contextMenuSettings = new WF.ToolStripMenuItem(AppStrings.Settings);
+            contextMenuRootItems.Add(contextMenuSettings);
             contextMenuSettings.Name = "settings";
 
-            var settingsOnACItem = contextMenuSettings.MenuItems.Add(AppStrings.SchemaToSwitchOnAc);
+            var settingsOnACItem = contextMenuSettings.DropDownItems.Add(AppStrings.SchemaToSwitchOnAc);
             settingsOnACItem.Name = "settingsOnAC";
 
-            var settingsOffACItem = contextMenuSettings.MenuItems.Add(AppStrings.SchemaToSwitchOffAc);
+            var settingsOffACItem = contextMenuSettings.DropDownItems.Add(AppStrings.SchemaToSwitchOffAc);
             settingsOffACItem.Name = "settingsOffAC";
 
-            var automaticSwitchItem = contextMenuSettings.MenuItems.Add(AppStrings.AutomaticOnOffACSwitch);
+            var automaticSwitchItem = (WF.ToolStripMenuItem)contextMenuSettings.DropDownItems.Add(AppStrings.AutomaticOnOffACSwitch);
             automaticSwitchItem.Checked = configuration.Data.AutomaticOnACSwitch;
             automaticSwitchItem.Click += AutomaticSwitchItem_Click;
 
-            var automaticHideItem = contextMenuSettings.MenuItems.Add(AppStrings.HideFlyoutAfterSchemaChangeSwitch);
+            var automaticHideItem = (WF.ToolStripMenuItem)contextMenuSettings.DropDownItems.Add(AppStrings.HideFlyoutAfterSchemaChangeSwitch);
             automaticHideItem.Checked = configuration.Data.AutomaticFlyoutHideAfterClick;
             automaticHideItem.Click += AutomaticHideItem_Click;
 
-            var onlyDefaultSchemasItem = contextMenuSettings.MenuItems.Add(AppStrings.ShowOnlyDefaultSchemas);
+            var onlyDefaultSchemasItem = (WF.ToolStripMenuItem)contextMenuSettings.DropDownItems.Add(AppStrings.ShowOnlyDefaultSchemas);
             onlyDefaultSchemasItem.Checked = configuration.Data.ShowOnlyDefaultSchemas;
             onlyDefaultSchemasItem.Click += OnlyDefaultSchemas_Click;
 
@@ -95,7 +96,7 @@ namespace PowerSwitcher.TrayApp
 
         private void AutomaticHideItem_Click(object sender, EventArgs e)
         {
-            WF.MenuItem automaticHideItem = (WF.MenuItem)sender;
+            var automaticHideItem = (WF.ToolStripMenuItem)sender;
 
             configuration.Data.AutomaticFlyoutHideAfterClick = !configuration.Data.AutomaticFlyoutHideAfterClick;
             automaticHideItem.Checked = configuration.Data.AutomaticFlyoutHideAfterClick;
@@ -105,7 +106,7 @@ namespace PowerSwitcher.TrayApp
 
         private void OnlyDefaultSchemas_Click(object sender, EventArgs e)
         {
-            WF.MenuItem onlyDefaultSchemasItem = (WF.MenuItem)sender;
+            var onlyDefaultSchemasItem = (WF.ToolStripMenuItem)sender;
 
             configuration.Data.ShowOnlyDefaultSchemas = !configuration.Data.ShowOnlyDefaultSchemas;
             onlyDefaultSchemasItem.Checked = configuration.Data.AutomaticFlyoutHideAfterClick;
@@ -115,7 +116,7 @@ namespace PowerSwitcher.TrayApp
 
         private void AutomaticSwitchItem_Click(object sender, EventArgs e)
         {
-            WF.MenuItem automaticSwitchItem = (WF.MenuItem)sender;
+            var automaticSwitchItem = (WF.ToolStripMenuItem)sender;
 
             configuration.Data.AutomaticOnACSwitch = !configuration.Data.AutomaticOnACSwitch;
             automaticSwitchItem.Checked = configuration.Data.AutomaticOnACSwitch;
@@ -171,14 +172,16 @@ namespace PowerSwitcher.TrayApp
                 (s, ea) => switchToPowerSchema(powerSchema),
                 powerSchema.IsActive
                 );
-            _trayIcon.ContextMenu.MenuItems.Add(0, newItemMain);
+
+            _trayIcon.ContextMenuStrip.Items.Insert(0, newItemMain);
 
             var newItemSettingsOffAC = getNewPowerSchemaItem(
                 powerSchema,
                 (s, ea) => setPowerSchemaAsOffAC(powerSchema),
                 (powerSchema.Guid == configuration.Data.AutomaticPlanGuidOffAC)
                 );
-            _trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsOffAC"].MenuItems.Add(0, newItemSettingsOffAC);
+
+            ((WF.ToolStripMenuItem)((WF.ToolStripMenuItem)_trayIcon.ContextMenuStrip.Items["settings"]).DropDownItems["settingsOffAC"]).DropDownItems.Insert(0, newItemSettingsOffAC);
 
             var newItemSettingsOnAC = getNewPowerSchemaItem(
                 powerSchema,
@@ -186,27 +189,27 @@ namespace PowerSwitcher.TrayApp
                 (powerSchema.Guid == configuration.Data.AutomaticPlanGuidOnAC)
                 );
 
-            _trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsOnAC"].MenuItems.Add(0, newItemSettingsOnAC);
+            ((WF.ToolStripMenuItem)((WF.ToolStripMenuItem)_trayIcon.ContextMenuStrip.Items["settings"]).DropDownItems["settingsOnAC"]).DropDownItems.Insert(0, newItemSettingsOnAC);
         }
 
         private void clearPowerSchemasInTray()
         {
-            for (int i = _trayIcon.ContextMenu.MenuItems.Count - 1; i >= 0; i--)
+            for (int i = _trayIcon.ContextMenuStrip.Items.Count - 1; i >= 0; i--)
             {
-                var item = _trayIcon.ContextMenu.MenuItems[i];
+                var item = _trayIcon.ContextMenuStrip.Items[i];
                 if (item.Name.StartsWith("pwrScheme", StringComparison.Ordinal))
                 {
-                    _trayIcon.ContextMenu.MenuItems.Remove(item);
+                    _trayIcon.ContextMenuStrip.Items.Remove(item);
                 }
             }
 
-            _trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsOffAC"].MenuItems.Clear();
-            _trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsOnAC"].MenuItems.Clear();
+            ((WF.ToolStripMenuItem)((WF.ToolStripMenuItem)_trayIcon.ContextMenuStrip.Items["settings"]).DropDownItems["settingsOnAC"]).DropDownItems.Clear();
+            ((WF.ToolStripMenuItem)((WF.ToolStripMenuItem)_trayIcon.ContextMenuStrip.Items["settings"]).DropDownItems["settingsOffAC"]).DropDownItems.Clear();
         }
 
-        private WF.MenuItem getNewPowerSchemaItem(IPowerSchema powerSchema, EventHandler clickedHandler, bool isChecked)
+        private WF.ToolStripMenuItem getNewPowerSchemaItem(IPowerSchema powerSchema, EventHandler clickedHandler, bool isChecked)
         {
-            var newItemMain = new WF.MenuItem(powerSchema.Name);
+            var newItemMain = new WF.ToolStripMenuItem(powerSchema.Name);
             newItemMain.Name = $"pwrScheme{powerSchema.Guid}";
             newItemMain.Checked = isChecked;
             newItemMain.Click += clickedHandler;
