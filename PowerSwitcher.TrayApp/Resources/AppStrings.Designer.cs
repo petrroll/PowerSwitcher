@@ -140,5 +140,14 @@ namespace PowerSwitcher.TrayApp.Resources {
                 return ResourceManager.GetString("Settings", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show only default power schemas.
+        /// </summary>
+        internal static string ShowOnlyDefaultSchemas {
+            get {
+                return ResourceManager.GetString("ShowOnlyDefaultSchemas", resourceCulture);
+            }
+        }
     }
 }

@@ -144,4 +144,7 @@
   <data name="Settings" xml:space="preserve">
     <value>Settings</value>
   </data>
+  <data name="ShowOnlyDefaultSchemas" xml:space="preserve">
+    <value>Show only default power schemas</value>
+  </data>
 </root>

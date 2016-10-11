@@ -56,6 +56,10 @@ namespace PowerSwitcher.TrayApp
             automaticHideItem.Checked = configuration.Data.AutomaticFlyoutHideAfterClick;
             automaticHideItem.Click += AutomaticHideItem_Click;
 
+            var onlyDefaultSchemasItem = contextMenuSettings.MenuItems.Add(AppStrings.ShowOnlyDefaultSchemas);
+            onlyDefaultSchemasItem.Checked = configuration.Data.ShowOnlyDefaultSchemas;
+            onlyDefaultSchemasItem.Click += OnlyDefaultSchemas_Click;
+
             var aboutItem = contextMenuRootItems.Add(AppStrings.About);
             aboutItem.Click += About_Click;
 
@@ -95,6 +99,16 @@ namespace PowerSwitcher.TrayApp
 
             configuration.Data.AutomaticFlyoutHideAfterClick = !configuration.Data.AutomaticFlyoutHideAfterClick;
             automaticHideItem.Checked = configuration.Data.AutomaticFlyoutHideAfterClick;
+
+            configuration.Save();
+        }
+
+        private void OnlyDefaultSchemas_Click(object sender, EventArgs e)
+        {
+            WF.MenuItem onlyDefaultSchemasItem = (WF.MenuItem)sender;
+
+            configuration.Data.ShowOnlyDefaultSchemas = !configuration.Data.ShowOnlyDefaultSchemas;
+            onlyDefaultSchemasItem.Checked = configuration.Data.AutomaticFlyoutHideAfterClick;
 
             configuration.Save();
         }

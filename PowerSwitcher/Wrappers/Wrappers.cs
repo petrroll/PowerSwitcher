@@ -184,6 +184,7 @@ namespace PowerSwitcher.Wrappers
         #endregion
     }
 
+    //Deprecated wrapper, not used anymore (useful for reference).
     public class DefaultPowerSchemes
     {
         public List<PowerSchema> GetCurrentSchemas()
