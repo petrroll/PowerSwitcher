@@ -6,8 +6,8 @@ Features:
 - Automatic schema switching when AC adapter gets connected / disconnected
 - Launch on Windows startup
 
-![PowerPlanSwitcher Flyout](./ReadmeAssets/PowerSwicher_Flyout_1.png)
+![PowerPlanSwitcher Flyout](https://github.com/petrroll/PowerSwitcher/raw/master/ReadmeAssets/PowerSwicher_Flyout_1.PNG)
 
-![PowerPlanSwitcher Flyout 2](./ReadmeAssets/PowerSwicher_Flyout_2.png)
+![PowerPlanSwitcher Flyout 2](https://github.com/petrroll/PowerSwitcher/raw/master/ReadmeAssets/PowerSwicher_Flyout_2.PNG)
 
-![PowerPlanSwitcher Context Menu](./ReadmeAssets/PowerSwicher_ContextMenu_1.png)
+![PowerPlanSwitcher Context Menu](https://github.com/petrroll/PowerSwitcher/raw/master/ReadmeAssets/PowerSwicher_ContextMenu_1.PNG)
