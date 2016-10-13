@@ -10,6 +10,13 @@ PowerPlanSwitcher is a simple app that allows you to quickly switch between powe
 ### Other:
 Feel free to buy me a beer at: [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=houskape%40gmail%2ecom&lc=CZ&item_name=PowerPlanSwitcher&item_number=042&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted)
 
+### Special thanks to:
+- [EarTrumpet](https://github.com/File-New-Project/EarTrumpet) project for flyout, interop stuff, and some other help :)
+ - David Golden (@GoldenTao)
+ - Rafael Rivera (@WithinRafael)
+- [Andy Belsky's power-plan-switcher](https://github.com/andy722/power-plan-switcher) for some interop inspiration
+- [Mahdi Safsafi's ImmersiveColors](https://github.com/MahdiSafsafi/ImmersiveColors) for making working with undocumented accent colors easy :)
+
 ![PowerPlanSwitcher Flyout](https://github.com/petrroll/PowerSwitcher/raw/master/ReadmeAssets/PowerSwicher_Flyout_1.PNG)
 
 ![PowerPlanSwitcher Flyout 2](https://github.com/petrroll/PowerSwitcher/raw/master/ReadmeAssets/PowerSwicher_Flyout_2.PNG)
