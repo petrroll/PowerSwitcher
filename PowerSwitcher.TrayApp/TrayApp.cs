@@ -108,7 +108,7 @@ namespace PowerSwitcher.TrayApp
             WF.MenuItem onlyDefaultSchemasItem = (WF.MenuItem)sender;
 
             configuration.Data.ShowOnlyDefaultSchemas = !configuration.Data.ShowOnlyDefaultSchemas;
-            onlyDefaultSchemasItem.Checked = configuration.Data.AutomaticFlyoutHideAfterClick;
+            onlyDefaultSchemasItem.Checked = configuration.Data.ShowOnlyDefaultSchemas;
 
             configuration.Save();
         }
