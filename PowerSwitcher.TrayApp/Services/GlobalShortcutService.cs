@@ -99,9 +99,9 @@ namespace PowerSwitcher.TrayApp.Services
             {
                 if (disposing)
                 {
-                    foreach (var item in _dictHotKeyToCalBackProc)
+                    foreach (var item in _dictHotKeyToCalBackProc.Values.ToList())
                     {
-                        Unregister(item.Value);
+                        Unregister(item);
                     }
                 }
 
