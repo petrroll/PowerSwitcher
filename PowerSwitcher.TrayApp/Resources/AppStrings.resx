@@ -147,4 +147,7 @@
   <data name="ShowOnlyDefaultSchemas" xml:space="preserve">
     <value>Show only default power schemas</value>
   </data>
+  <data name="ToggleOnShowrtcutSwitch" xml:space="preserve">
+    <value>Enable shortcut for flyout toggle</value>
+  </data>
 </root>

@@ -60,6 +60,10 @@ namespace PowerSwitcher.TrayApp
             onlyDefaultSchemasItem.Checked = configuration.Data.ShowOnlyDefaultSchemas;
             onlyDefaultSchemasItem.Click += OnlyDefaultSchemas_Click;
 
+            var enableShortcutsToggleItem = contextMenuSettings.MenuItems.Add($"{AppStrings.ToggleOnShowrtcutSwitch} ({configuration.Data.ShowOnShortcutKeyModifier} + {configuration.Data.ShowOnShortcutKey})");
+            enableShortcutsToggleItem.Checked = configuration.Data.ShowOnShortcutSwitch;
+            enableShortcutsToggleItem.Click += EnableShortcutsToggleItem_Click; ;
+
             var aboutItem = contextMenuRootItems.Add(AppStrings.About);
             aboutItem.Click += About_Click;
 
@@ -70,9 +74,13 @@ namespace PowerSwitcher.TrayApp
             _trayIcon.Text = string.Concat(AppStrings.AppName);
             _trayIcon.Visible = true;
 
+            this.ShowFlyout += (((App)Application.Current).MainWindow as MainWindow).ToggleWindowVisibility;
+
             //Run automatic on-off-AC change at boot
             fireManualOnOffACEvent();
         }
+
+
 
         private void fireManualOnOffACEvent()
         {
@@ -89,9 +97,19 @@ namespace PowerSwitcher.TrayApp
                 ShowFlyout?.Invoke();
             }
         }
+
         #endregion
 
-        #region AutomaticOnACSwitchRelated
+        #region SettingsTogglesRegion
+        private void EnableShortcutsToggleItem_Click(object sender, EventArgs e)
+        {
+            WF.MenuItem enableShortcutsToggleItem = (WF.MenuItem)sender;
+
+            configuration.Data.ShowOnShortcutSwitch = !configuration.Data.ShowOnShortcutSwitch;
+            enableShortcutsToggleItem.Checked = configuration.Data.ShowOnShortcutSwitch;
+
+            configuration.Save();
+        }
 
         private void AutomaticHideItem_Click(object sender, EventArgs e)
         {
@@ -124,6 +142,10 @@ namespace PowerSwitcher.TrayApp
 
             configuration.Save();
         }
+
+        #endregion
+
+        #region AutomaticOnACSwitchRelated
 
         private void PowerManager_PowerSourceChanged(PowerPlugStatus currentPowerPlugStatus)
         {

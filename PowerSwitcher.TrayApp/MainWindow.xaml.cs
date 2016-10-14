@@ -29,9 +29,6 @@ namespace PowerSwitcher.TrayApp
         public MainWindow()
         {
             InitializeComponent();
-
-            ((App)Application.Current).TrayApp.ShowFlyout += TrayApp_ShowFlyout;
-        
             createAndHideWindow();
 
             // Move keyboard focus to the first element. Disabled this since it is ugly but not sure invisible
@@ -51,7 +48,7 @@ namespace PowerSwitcher.TrayApp
         }
 
         #region ShowingHiding
-        void TrayApp_ShowFlyout()
+        public void ToggleWindowVisibility()
         {
             if (this.Visibility == Visibility.Visible)
             {

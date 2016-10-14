@@ -149,5 +149,14 @@ namespace PowerSwitcher.TrayApp.Resources {
                 return ResourceManager.GetString("ShowOnlyDefaultSchemas", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Enable shortcut for flyout toggle.
+        /// </summary>
+        internal static string ToggleOnShowrtcutSwitch {
+            get {
+                return ResourceManager.GetString("ToggleOnShowrtcutSwitch", resourceCulture);
+            }
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using PowerSwitcher.TrayApp.Configuration;
+using PowerSwitcher.TrayApp.Services;
 using System.Globalization;
 using System.Reflection;
 using System.Threading;
@@ -11,6 +12,8 @@ namespace PowerSwitcher.TrayApp
     /// </summary>
     public partial class App : Application
     {
+        public HotKeyService HotKeyManager { get; private set; }
+
         public IPowerManager PowerManager { get; private set; }
         public TrayApp TrayApp { get; private set; }
         public ConfigurationInstance<PowerSwitcherSettings> Configuration { get; private set; }
@@ -18,28 +21,59 @@ namespace PowerSwitcher.TrayApp
         private Mutex _mMutex;
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            if (!tryToCreateMutex()) return;
+
+            var configurationManager = new ConfigurationManagerXML<PowerSwitcherSettings>("PowerSwitcherSettings.xml");
+            Configuration = new ConfigurationInstance<PowerSwitcherSettings>(configurationManager);
+
+            HotKeyManager = new HotKeyService();
+
+            PowerManager = new PowerManager();
+            MainWindow = new MainWindow();
+            TrayApp = new TrayApp(PowerManager, Configuration); //Has to be last because it hooks to MainWindow
+
+            Configuration.Data.PropertyChanged += Configuration_PropertyChanged;
+            if (Configuration.Data.ShowOnShortcutSwitch) { registerHotkeyFromConfiguration(); }
+        }
+
+        private void Configuration_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if(e.PropertyName == nameof(PowerSwitcherSettings.ShowOnShortcutSwitch))
+            {
+                if (Configuration.Data.ShowOnShortcutSwitch) { registerHotkeyFromConfiguration(); }
+                else { unregisterHotkeyFromConfiguration(); }
+            }
+        }
+
+        private void unregisterHotkeyFromConfiguration()
+        {
+            HotKeyManager.Unregister(new HotKey(Configuration.Data.ShowOnShortcutKey, Configuration.Data.ShowOnShortcutKeyModifier));
+        }
+
+        private HotKey registerHotkeyFromConfiguration()
+        {
+            var newHotKey = new HotKey(Configuration.Data.ShowOnShortcutKey, Configuration.Data.ShowOnShortcutKeyModifier);
+
+            HotKeyManager.Register(newHotKey);
+            newHotKey.HotKeyFired += (this.MainWindow as MainWindow).ToggleWindowVisibility;
+
+            return newHotKey;
+        }
+
+        private bool tryToCreateMutex()
+        {
             var assembly = Assembly.GetExecutingAssembly();
             var mutexName = string.Format(CultureInfo.InvariantCulture, "Local\\{{{0}}}{{{1}}}", assembly.GetType().GUID, assembly.GetName().Name);
 
             bool mutexCreated;
 
             _mMutex = new Mutex(true, mutexName, out mutexCreated);
+            if (mutexCreated) { return true; }
 
-            if (!mutexCreated)
-            {
-                _mMutex = null;
-                Current.Shutdown();
-                return;
-            }
-
-            var configurationManager = new ConfigurationManagerXML<PowerSwitcherSettings>("PowerSwitcherSettings.xml");
-            Configuration = new ConfigurationInstance<PowerSwitcherSettings>(configurationManager);
-
-            PowerManager = new PowerManager();
-            TrayApp = new TrayApp(PowerManager, Configuration);
-            MainWindow = new MainWindow();
+            _mMutex = null;
+            Current.Shutdown();
+            return false;
         }
-
 
         private void DisposeMutex()
         {
@@ -52,6 +86,8 @@ namespace PowerSwitcher.TrayApp
         private void App_OnExit(object sender, ExitEventArgs e)
         {
             DisposeMutex();
+            PowerManager.Dispose();
+            HotKeyManager.Dispose();
         }
 
         ~App()
