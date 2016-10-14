@@ -7,7 +7,7 @@
   <Identity Name="Petrroll.PowerSwitcher"
     ProcessorArchitecture="x86"
     Publisher="CN=Petrroll, L=Prague, C=Czech Republic"
-    Version="0.2.5.0" />
+    Version="0.2.7.0" />
   <Properties>
     <DisplayName>PowerSwitcher</DisplayName>
     <PublisherDisplayName>Petrroll</PublisherDisplayName>
