@@ -1,8 +1,7 @@
-﻿using PowerSwitcher.TrayApp.Configuration;
-using PowerSwitcher.TrayApp.Extensions;
+﻿using Petrroll.Helpers;
+using PowerSwitcher.TrayApp.Configuration;
 using System;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace PowerSwitcher.TrayApp.ViewModels
 {

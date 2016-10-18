@@ -1,4 +1,4 @@
-﻿using PowerSwitcher.TrayApp.Extensions;
+﻿using Petrroll.Helpers;
 using PowerSwitcher.TrayApp.Services;
 using System;
 using System.Windows.Input;

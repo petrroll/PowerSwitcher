@@ -95,9 +95,7 @@
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Configuration\PowerSwitcherConfiguration.cs" />
     <Compile Include="Extensions\BlurWindowExtensions.cs" />
-    <Compile Include="Extensions\Helpers.cs" />
     <Compile Include="Extensions\InvertableVisibilityConvertor.cs" />
-    <Compile Include="Extensions\ObservableObject.cs" />
     <Compile Include="Extensions\OpacityConvertor.cs" />
     <Compile Include="Extensions\WindowExtensions.cs" />
     <Compile Include="Resources\AppStrings.Designer.cs">
@@ -150,6 +148,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Petrroll.Helpers\Petrroll.Helpers.csproj">
+      <Project>{c59cb1ed-956d-48f4-a78f-aed6bf3dd8aa}</Project>
+      <Name>Petrroll.Helpers</Name>
+    </ProjectReference>
     <ProjectReference Include="..\PowerSwitcher\PowerSwitcher.csproj">
       <Project>{1d107d93-2902-4782-9c06-825925c3b39f}</Project>
       <Name>PowerSwitcher</Name>

@@ -1,4 +1,4 @@
-﻿using PowerSwitcher.TrayApp.Extensions;
+﻿using Petrroll.Helpers;
 using System;
 using System.Collections.ObjectModel;
 

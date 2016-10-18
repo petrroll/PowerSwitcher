@@ -1,7 +1,8 @@
 [Files]
 "..\Build\Release\PowerSwitcher.TrayApp.exe"		"PowerSwitcher.TrayApp.exe"
-"..\Build\Release\PowerSwitcher.dll"			"PowerSwitcher.dll"
+"..\Build\Release\PowerSwitcher.dll"				"PowerSwitcher.dll"
+"..\Build\Release\Petrroll.Helpers.dll"				"Petrroll.Helpers.dll"
 "..\PowerSwitcher.Assets\Square150x150Logo.png"		"Assets\Square150x150Logo.png"
-"..\PowerSwitcher.Assets\StoreLogo50x50.png"			"Assets\StoreLogo50x50.png"
+"..\PowerSwitcher.Assets\StoreLogo50x50.png"		"Assets\StoreLogo50x50.png"
 "..\PowerSwitcher.Assets\Square44x44Logo.png"		"Assets\Square44x44Logo.png"
-"AppxManifest.xml"					"AppxManifest.xml"
+"AppxManifest.xml"									"AppxManifest.xml"

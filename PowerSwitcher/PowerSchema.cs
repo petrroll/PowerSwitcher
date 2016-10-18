@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Petrroll.Helpers;
+using System;
 using System.ComponentModel;
 
 namespace PowerSwitcher
@@ -12,15 +13,15 @@ namespace PowerSwitcher
         bool IsActive { get; }
     }
 
-    public class PowerSchema : IPowerSchema, INotifyPropertyChanged
+    public class PowerSchema : ObservableObject, IPowerSchema
     {
         public Guid Guid { get; }
 
         string name;
-        public string Name{get{return name;} set { name = value; invokePropertyChanged(nameof(Name)); } }
+        public string Name{get{return name;} set { name = value; RaisePropertyChangedEvent(nameof(Name)); } }
 
         bool isActive;
-        public bool IsActive { get { return isActive; } set { isActive = value; invokePropertyChanged(nameof(IsActive)); } }
+        public bool IsActive { get { return isActive; } set { isActive = value; RaisePropertyChangedEvent(nameof(IsActive)); } }
 
         public PowerSchema(string name, Guid guid) : this(name, guid, false) { }
 
@@ -30,11 +31,5 @@ namespace PowerSwitcher
             this.Guid = guid;
             this.IsActive = isActive;
         }
-
-        private void invokePropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-        public event PropertyChangedEventHandler PropertyChanged;
     }
 }

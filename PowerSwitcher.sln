@@ -24,6 +24,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Assets", "Assets", "{E432A9
 		PowerSwitcher.Assets\StoreLogo50x50.png = PowerSwitcher.Assets\StoreLogo50x50.png
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Petrroll.Helpers", "Petrroll.Helpers\Petrroll.Helpers.csproj", "{C59CB1ED-956D-48F4-A78F-AED6BF3DD8AA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,12 @@ Global
 		{72D5D98C-D8E8-4164-889E-645142A10EDD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{72D5D98C-D8E8-4164-889E-645142A10EDD}.ReleaseAndPackage|Any CPU.ActiveCfg = ReleaseAndPackage|Any CPU
 		{72D5D98C-D8E8-4164-889E-645142A10EDD}.ReleaseAndPackage|Any CPU.Build.0 = ReleaseAndPackage|Any CPU
+		{C59CB1ED-956D-48F4-A78F-AED6BF3DD8AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C59CB1ED-956D-48F4-A78F-AED6BF3DD8AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C59CB1ED-956D-48F4-A78F-AED6BF3DD8AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C59CB1ED-956D-48F4-A78F-AED6BF3DD8AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C59CB1ED-956D-48F4-A78F-AED6BF3DD8AA}.ReleaseAndPackage|Any CPU.ActiveCfg = Release|Any CPU
+		{C59CB1ED-956D-48F4-A78F-AED6BF3DD8AA}.ReleaseAndPackage|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

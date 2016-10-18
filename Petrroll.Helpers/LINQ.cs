@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace PowerSwitcher.TrayApp.Extensions
+namespace Petrroll.Helpers
 {
     public static class LINQHelpers
     {

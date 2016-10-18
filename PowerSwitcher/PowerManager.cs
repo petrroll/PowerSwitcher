@@ -1,4 +1,5 @@
-﻿using PowerSwitcher.Wrappers;
+﻿using Petrroll.Helpers;
+using PowerSwitcher.Wrappers;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -21,7 +22,7 @@ namespace PowerSwitcher
         void SetPowerSchema(Guid guid);
     }
 
-    public class PowerManager : IPowerManager
+    public class PowerManager : ObservableObject, IPowerManager
     {
         PowProfWrapper powerWraper;
         BatteryInfoWrapper batteryWrapper;
@@ -30,8 +31,6 @@ namespace PowerSwitcher
         public IPowerSchema CurrentSchema { get { return Schemas.FirstOrDefault(sch => sch.IsActive); } }
 
         public PowerPlugStatus CurrentPowerStatus { get; private set; }
-
-        public event PropertyChangedEventHandler PropertyChanged;
 
         public PowerManager()
         {
@@ -52,7 +51,7 @@ namespace PowerSwitcher
                 var originalSchema = Schemas.FirstOrDefault(sch => sch.Guid == newSchema.Guid);
                 if (originalSchema == null) { Schemas.Insert(newSchemas.IndexOf(newSchema), newSchema); continue; }
 
-                if (originalSchema.IsActive != newSchema.IsActive) { ((PowerSchema)originalSchema).IsActive = newSchema.IsActive; raisePropertyChanged(nameof(CurrentSchema)); }
+                if (originalSchema.IsActive != newSchema.IsActive) { ((PowerSchema)originalSchema).IsActive = newSchema.IsActive; RaisePropertyChangedEvent(nameof(CurrentSchema)); }
                 if (originalSchema.Name != newSchema.Name) { ((PowerSchema)originalSchema).Name = newSchema.Name; }
             }
 
@@ -60,7 +59,7 @@ namespace PowerSwitcher
             if (currentActiveSchema.IsActive) { return; }
 
             currentActiveSchema.IsActive = true;
-            raisePropertyChanged(nameof(CurrentSchema));
+            RaisePropertyChangedEvent(nameof(CurrentSchema));
         }
 
         public void SetPowerSchema(IPowerSchema schema)
@@ -90,12 +89,7 @@ namespace PowerSwitcher
         private void powerChangedEvent(PowerPlugStatus newStatus)
         {
             CurrentPowerStatus = newStatus;
-            raisePropertyChanged(nameof(CurrentPowerStatus));
-        }
-
-        private void raisePropertyChanged(string propertyName)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            RaisePropertyChangedEvent(nameof(CurrentPowerStatus));
         }
 
         #region IDisposable Support
