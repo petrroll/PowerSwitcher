@@ -24,7 +24,7 @@ namespace PowerSwitcher.TrayApp
         public TrayApp(IPowerManager powerManager, ConfigurationInstance<PowerSwitcherSettings> config)
         {
             this.pwrManager = powerManager;
-            pwrManager.PowerSourceChanged += PowerManager_PowerSourceChanged;
+            pwrManager.PropertyChanged += PwrManager_PropertyChanged;
 
             configuration = config;
 
@@ -77,16 +77,10 @@ namespace PowerSwitcher.TrayApp
             this.ShowFlyout += (((App)Application.Current).MainWindow as MainWindow).ToggleWindowVisibility;
 
             //Run automatic on-off-AC change at boot
-            fireManualOnOffACEvent();
+            powerStatusChanged();
         }
 
 
-
-        private void fireManualOnOffACEvent()
-        {
-            var currPowerPlugState = pwrManager.GetCurrentPowerPlugStatus();
-            PowerManager_PowerSourceChanged(currPowerPlugState);
-        }
         #endregion
 
         #region FlyoutRelated
@@ -138,7 +132,7 @@ namespace PowerSwitcher.TrayApp
             configuration.Data.AutomaticOnACSwitch = !configuration.Data.AutomaticOnACSwitch;
             automaticSwitchItem.Checked = configuration.Data.AutomaticOnACSwitch;
 
-            if (configuration.Data.AutomaticOnACSwitch) { fireManualOnOffACEvent(); }
+            if (configuration.Data.AutomaticOnACSwitch) { powerStatusChanged(); }
 
             configuration.Save();
         }
@@ -147,10 +141,16 @@ namespace PowerSwitcher.TrayApp
 
         #region AutomaticOnACSwitchRelated
 
-        private void PowerManager_PowerSourceChanged(PowerPlugStatus currentPowerPlugStatus)
+        private void PwrManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(IPowerManager.CurrentPowerStatus)) { powerStatusChanged(); }
+        }
+
+        private void powerStatusChanged()
         {
             if(!configuration.Data.AutomaticOnACSwitch) { return; }
 
+            var currentPowerPlugStatus = pwrManager.CurrentPowerStatus;
             Guid schemaGuidToSwitch = default(Guid);
 
             switch (currentPowerPlugStatus)
@@ -165,7 +165,7 @@ namespace PowerSwitcher.TrayApp
                     break;
             }
 
-            IPowerSchema schemaToSwitchTo = pwrManager.PowerSchemas.FirstOrDefault(sch => sch.Guid == schemaGuidToSwitch);
+            IPowerSchema schemaToSwitchTo = pwrManager.Schemas.FirstOrDefault(sch => sch.Guid == schemaGuidToSwitch);
             if(schemaToSwitchTo == null) { return; }
 
             pwrManager.SetPowerSchema(schemaToSwitchTo);
@@ -180,7 +180,7 @@ namespace PowerSwitcher.TrayApp
             clearPowerSchemasInTray();
 
             pwrManager.UpdateSchemas();
-            foreach (var powerSchema in pwrManager.PowerSchemas)
+            foreach (var powerSchema in pwrManager.Schemas)
             {
                 updateTrayMenuWithPowerSchema(powerSchema);
             }

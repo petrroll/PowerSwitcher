@@ -1,6 +1,7 @@
 ﻿using PowerSwitcher.Wrappers;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 
@@ -9,10 +10,11 @@ namespace PowerSwitcher
 {
     public interface IPowerManager : INotifyPropertyChanged, IDisposable
     {
-        event Action<PowerPlugStatus> PowerSourceChanged;
-        PowerPlugStatus GetCurrentPowerPlugStatus();
+        ObservableCollection<IPowerSchema> Schemas { get; }
+        IPowerSchema CurrentSchema { get; }
 
-        IEnumerable<IPowerSchema> PowerSchemas { get; }
+        PowerPlugStatus CurrentPowerStatus { get; }
+
         void UpdateSchemas();
 
         void SetPowerSchema(IPowerSchema schema);
@@ -24,24 +26,41 @@ namespace PowerSwitcher
         PowProfWrapper powerWraper;
         BatteryInfoWrapper batteryWrapper;
 
-        public IEnumerable<IPowerSchema> PowerSchemas { get; private set; }
+        public ObservableCollection<IPowerSchema> Schemas{ get; private set; }
+        public IPowerSchema CurrentSchema { get { return Schemas.FirstOrDefault(sch => sch.IsActive); } }
+
+        public PowerPlugStatus CurrentPowerStatus { get; private set; }
+
         public event PropertyChangedEventHandler PropertyChanged;
-        public event Action<PowerPlugStatus> PowerSourceChanged;
 
         public PowerManager()
         {
             powerWraper = new PowProfWrapper();
             batteryWrapper = new BatteryInfoWrapper(powerChangedEvent);
 
+            Schemas = new ObservableCollection<IPowerSchema>();
+
+            powerChangedEvent(batteryWrapper.GetCurrentChargingStatus());
             UpdateSchemas();
         }
 
         public void UpdateSchemas()
         {
-            PowerSchemas = powerWraper.GetCurrentSchemas();
-            getCurrentSchemaWithoutUpdate().IsActive = true;
+            var newSchemas = powerWraper.GetCurrentSchemas();
+            foreach (var newSchema in newSchemas)
+            {
+                var originalSchema = Schemas.FirstOrDefault(sch => sch.Guid == newSchema.Guid);
+                if (originalSchema == null) { Schemas.Insert(newSchemas.IndexOf(newSchema), newSchema); continue; }
 
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(PowerSchemas)));
+                if (originalSchema.IsActive != newSchema.IsActive) { ((PowerSchema)originalSchema).IsActive = newSchema.IsActive; raisePropertyChanged(nameof(CurrentSchema)); }
+                if (originalSchema.Name != newSchema.Name) { ((PowerSchema)originalSchema).Name = newSchema.Name; }
+            }
+
+            var currentActiveSchema = getCurrentSchemaWithoutUpdate();
+            if (currentActiveSchema.IsActive) { return; }
+
+            currentActiveSchema.IsActive = true;
+            raisePropertyChanged(nameof(CurrentSchema));
         }
 
         public void SetPowerSchema(IPowerSchema schema)
@@ -61,7 +80,7 @@ namespace PowerSwitcher
             PowerSchema currSchema = null;
 
             currSchemaGuid = powerWraper.GetActiveGuid();
-            currSchema = (PowerSchema)PowerSchemas.Where(s => s.Guid == currSchemaGuid).FirstOrDefault();
+            currSchema = (PowerSchema)Schemas.Where(s => s.Guid == currSchemaGuid).FirstOrDefault();
 
             if (currSchema == null) { throw new NotImplementedException("Schemas relaoding not supported yet."); }
 
@@ -70,7 +89,13 @@ namespace PowerSwitcher
 
         private void powerChangedEvent(PowerPlugStatus newStatus)
         {
-            PowerSourceChanged?.Invoke(newStatus);
+            CurrentPowerStatus = newStatus;
+            raisePropertyChanged(nameof(CurrentPowerStatus));
+        }
+
+        private void raisePropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         #region IDisposable Support
@@ -93,11 +118,6 @@ namespace PowerSwitcher
 
             //No destructor so isn't required (yet)            
             // GC.SuppressFinalize(this); 
-        }
-
-        public PowerPlugStatus GetCurrentPowerPlugStatus()
-        {
-            return batteryWrapper.GetCurrentChargingStatus();
         }
 
         #endregion
