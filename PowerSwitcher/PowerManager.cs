@@ -49,7 +49,7 @@ namespace PowerSwitcher
             foreach (var newSchema in newSchemas)
             {
                 var originalSchema = Schemas.FirstOrDefault(sch => sch.Guid == newSchema.Guid);
-                if (originalSchema == null) { Schemas.Insert(newSchemas.IndexOf(newSchema), newSchema); continue; }
+                if (originalSchema == null) { var insertToIndex = Math.Min(newSchemas.IndexOf(newSchema), Schemas.Count - 1); Schemas.Insert(insertToIndex, newSchema); continue; }
 
                 if (originalSchema.IsActive != newSchema.IsActive) { ((PowerSchema)originalSchema).IsActive = newSchema.IsActive; RaisePropertyChangedEvent(nameof(CurrentSchema)); }
                 if (originalSchema.Name != newSchema.Name) { ((PowerSchema)originalSchema).Name = newSchema.Name; }
