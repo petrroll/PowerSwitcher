@@ -2,17 +2,17 @@
 using PowerSwitcher.TrayApp.Configuration;
 using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Linq;
 
 namespace PowerSwitcher.TrayApp.ViewModels
 {
     public class MainWindowViewModel : ObservableObject
     {
-
         private IPowerManager pwrManager;
         private ConfigurationInstance<PowerSwitcherSettings> config;
-        private bool filterOnlyDefaultSchemas;
 
-        public ObservableCollection<IPowerSchema> Schemas { get { return pwrManager.Schemas; } }
+        public INotifyCollectionChanged Schemas { get; private set; }
         public IPowerSchema ActiveSchema
         {
             get { return pwrManager.CurrentSchema; }
@@ -30,13 +30,25 @@ namespace PowerSwitcher.TrayApp.ViewModels
             pwrManager.PropertyChanged += PwrManager_PropertyChanged;
             config.Data.PropertyChanged += SettingsData_PropertyChanged;
 
-            //Doesn't work ATM
-            filterOnlyDefaultSchemas = config.Data.ShowOnlyDefaultSchemas;
+            updateOnlyDefaultSchemas();
         }
 
         private void SettingsData_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(PowerSwitcherSettings.ShowOnlyDefaultSchemas)) { }
+            if (e.PropertyName == nameof(PowerSwitcherSettings.ShowOnlyDefaultSchemas))
+            {
+                updateOnlyDefaultSchemas();
+            }
+        }
+
+        private void updateOnlyDefaultSchemas()
+        {
+            if (!config.Data.ShowOnlyDefaultSchemas) { Schemas = pwrManager.Schemas; RaisePropertyChangedEvent(nameof(Schemas)); }
+            else
+            {
+                Schemas = pwrManager.Schemas.WhereObservable<ObservableCollection<IPowerSchema>, IPowerSchema>(sch => defaultGuids.Contains(sch.Guid) || sch.IsActive);
+                RaisePropertyChangedEvent(nameof(Schemas));
+            }
         }
 
         private void PwrManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
