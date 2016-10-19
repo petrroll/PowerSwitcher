@@ -23,6 +23,8 @@ namespace Petrroll.Helpers
         public Func<T, bool> Predicate { get; private set; }
         public C BaseCollection { get; private set; }
 
+        private IEnumerable<T> filteredCollection => BaseCollection.Where(Predicate);
+
         public ObservableCollectionWhereShim(C baseCollection, Func<T, bool> predicate)
         {
             Predicate = predicate;
@@ -133,21 +135,21 @@ namespace Petrroll.Helpers
             CollectionChanged?.Invoke(this, args);
         }
 
-        public int Count => BaseCollection.Count;
+        public int Count => BaseCollection.Count(Predicate);
         public bool IsReadOnly => ((ICollection<T>)BaseCollection).IsReadOnly;
 
         public void Add(T item) => BaseCollection.Add(item);
 
         public void Clear() => BaseCollection.Clear();
 
-        public bool Contains(T item) => BaseCollection.Contains(item);
+        public bool Contains(T item) => filteredCollection.Contains(item);
 
-        public void CopyTo(T[] array, int arrayIndex) => BaseCollection.CopyTo(array, arrayIndex);
+        public void CopyTo(T[] array, int arrayIndex) => filteredCollection.ToList().CopyTo(array, arrayIndex);
 
         public bool Remove(T item) => BaseCollection.Remove(item);
 
-        public IEnumerator<T> GetEnumerator() => BaseCollection.GetEnumerator();
+        public IEnumerator<T> GetEnumerator() => filteredCollection.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator() => BaseCollection.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => filteredCollection.GetEnumerator();
     }
 }
