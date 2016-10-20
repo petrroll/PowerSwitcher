@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 
 namespace Petrroll.Helpers
@@ -10,19 +11,20 @@ namespace Petrroll.Helpers
 
     public static class ObservableLINQShim
     {
-        public static ObservableCollectionWhereShim<C, T> WhereObservable<C, T>(this C collection, Func<T, bool> predicate) where C : INotifyCollectionChanged, ICollection<T>
+        public static ObservableCollectionWhereShim<C, T> WhereObservable<C, T>(this C collection, Func<T, bool> predicate) where C : INotifyCollectionChanged, ICollection<T> where T : INotifyPropertyChanged
         {
             return new ObservableCollectionWhereShim<C, T>(collection, predicate);
         }
     }
 
-    public class ObservableCollectionWhereShim<C, T> : INotifyCollectionChanged, ICollection<T> where C : ICollection<T>, INotifyCollectionChanged
+    public class ObservableCollectionWhereShim<C, T> : INotifyCollectionChanged, ICollection<T> where C : ICollection<T>, INotifyCollectionChanged where T : INotifyPropertyChanged
     {
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         public Func<T, bool> Predicate { get; private set; }
         public C BaseCollection { get; private set; }
 
+        private int numberOfItems;
         private IEnumerable<T> filteredCollection => BaseCollection.Where(Predicate);
 
         public ObservableCollectionWhereShim(C baseCollection, Func<T, bool> predicate)
@@ -30,11 +32,33 @@ namespace Petrroll.Helpers
             Predicate = predicate;
             BaseCollection = baseCollection;
 
+            numberOfItems = filteredCollection.Count();
+
             baseCollection.CollectionChanged += Obs_CollectionChanged;
+            baseCollection.ForEach(sch => sch.PropertyChanged += Sch_PropertyChanged);
+        }
+
+        private void Sch_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            int oldNumberOfItems = numberOfItems;
+            int newNumberOfItems = filteredCollection.Count();
+
+            numberOfItems = newNumberOfItems;
+            if (oldNumberOfItems < newNumberOfItems)
+            {
+                var changeIndex = BaseCollection.Take(BaseCollection.IndexOf(sender)).Count(Predicate);
+                RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, sender, changeIndex));
+            }
+            else if (oldNumberOfItems > newNumberOfItems)
+            {
+                var changeIndex = BaseCollection.Take(BaseCollection.IndexOf(sender)).Count(Predicate);
+                RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, sender, changeIndex));
+            }
         }
 
         private void Obs_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+            numberOfItems = filteredCollection.Count();
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
@@ -55,6 +79,9 @@ namespace Petrroll.Helpers
                 default:
                     throw new InvalidOperationException();
             }
+
+            if (e.NewItems != null) { e.NewItems.ForEach(sch => ((T)sch).PropertyChanged += Sch_PropertyChanged); }
+            if (e.OldItems != null) { e.OldItems.ForEach(sch => ((T)sch).PropertyChanged -= Sch_PropertyChanged); }
         }
 
         private void handleMove(NotifyCollectionChangedEventArgs e)
@@ -140,7 +167,11 @@ namespace Petrroll.Helpers
 
         public void Add(T item) => BaseCollection.Add(item);
 
-        public void Clear() => BaseCollection.Clear();
+        public void Clear()
+        {
+            BaseCollection.ForEach(sch => sch.PropertyChanged -= Sch_PropertyChanged);
+            BaseCollection.Clear();
+        }
 
         public bool Contains(T item) => filteredCollection.Contains(item);
 
