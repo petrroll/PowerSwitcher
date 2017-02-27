@@ -67,6 +67,9 @@ namespace PowerSwitcher.TrayApp
             var aboutItem = contextMenuRootItems.Add(AppStrings.About);
             aboutItem.Click += About_Click;
 
+            var iconLicenceItem = contextMenuRootItems.Add(AppStrings.IconLicence);
+            iconLicenceItem.Click += IconLicenceItem_Click;
+
             var exitItem = contextMenuRootItems.Add(AppStrings.Exit);
             exitItem.Click += Exit_Click;
 
@@ -79,7 +82,6 @@ namespace PowerSwitcher.TrayApp
             //Run automatic on-off-AC change at boot
             powerStatusChanged();
         }
-
 
         #endregion
 
@@ -263,6 +265,12 @@ namespace PowerSwitcher.TrayApp
         {
             Process.Start(AppStrings.AboutAppURL);
         }
+
+        private void IconLicenceItem_Click(object sender, EventArgs e)
+        {
+            Process.Start(AppStrings.IconLicenceURL);
+        }
+
 
         void Exit_Click(object sender, EventArgs e)
         {

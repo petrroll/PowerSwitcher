@@ -135,6 +135,12 @@
   <data name="HideFlyoutAfterSchemaChangeSwitch" xml:space="preserve">
     <value>Hide flyout after schema change</value>
   </data>
+  <data name="IconLicence" xml:space="preserve">
+    <value>Icon made by Cursor creative</value>
+  </data>
+  <data name="IconLicenceURL" xml:space="preserve">
+    <value>http://www.flaticon.com/authors/cursor-creative</value>
+  </data>
   <data name="SchemaToSwitchOffAc" xml:space="preserve">
     <value>Schema to switch to off AC</value>
   </data>

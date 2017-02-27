@@ -115,6 +115,24 @@ namespace PowerSwitcher.TrayApp.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Icon made by Cursor creative.
+        /// </summary>
+        internal static string IconLicence {
+            get {
+                return ResourceManager.GetString("IconLicence", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to http://www.flaticon.com/authors/cursor-creative.
+        /// </summary>
+        internal static string IconLicenceURL {
+            get {
+                return ResourceManager.GetString("IconLicenceURL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Schema to switch to off AC.
         /// </summary>
         internal static string SchemaToSwitchOffAc {

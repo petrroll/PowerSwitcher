@@ -8,6 +8,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerSwitcher.TrayApp", "PowerSwitcher.TrayApp\PowerSwitcher.TrayApp.csproj", "{72D5D98C-D8E8-4164-889E-645142A10EDD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5B372EF5-7A61-4E56-B86E-D4CC811A053A}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Appx", "Appx", "{8E0616E9-3407-4127-AFEB-EDD34F9D66B5}"
 	ProjectSection(SolutionItems) = preProject
