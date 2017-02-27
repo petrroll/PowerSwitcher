@@ -26,3 +26,5 @@ Feel free to buy me a beer at: [![Donate](https://img.shields.io/badge/Donate-Pa
 ![PowerPlanSwitcher Flyout 2](https://github.com/petrroll/PowerSwitcher/raw/master/ReadmeAssets/PowerSwicher_Flyout_2.PNG)
 
 ![PowerPlanSwitcher Context Menu](https://github.com/petrroll/PowerSwitcher/raw/master/ReadmeAssets/PowerSwicher_ContextMenu_1.PNG)
+
+![PowerPlanSwitcher Context Menu 2](https://github.com/petrroll/PowerSwitcher/raw/master/ReadmeAssets/PowerSwicher_ContextMenu_2.PNG)
