@@ -15,6 +15,7 @@
         UseLayoutRounding="True"
         WindowStyle="None"
 		ResizeMode="NoResize"
+        TextOptions.TextFormattingMode="Display"
         
         Icon="Tray.ico"
         MaxHeight="600" 
