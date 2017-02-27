@@ -1,5 +1,5 @@
 #16x16 has to be done manually
-sizes="20 32 44 50 64 128 150"
+sizes="20 32 44 50 64 128 150 256 512"
 names=""
 for i in $sizes 
 do 

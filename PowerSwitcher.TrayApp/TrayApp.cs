@@ -73,7 +73,7 @@ namespace PowerSwitcher.TrayApp
             var exitItem = contextMenuRootItems.Add(AppStrings.Exit);
             exitItem.Click += Exit_Click;
 
-            _trayIcon.Icon = new System.Drawing.Icon(Application.GetResourceStream(new Uri("pack://application:,,,/PowerSwitcher.TrayApp;component/Tray.ico")).Stream);
+            _trayIcon.Icon = new System.Drawing.Icon(Application.GetResourceStream(new Uri("pack://application:,,,/PowerSwitcher.TrayApp;component/Tray.ico")).Stream, WF.SystemInformation.SmallIconSize);
             _trayIcon.Text = string.Concat(AppStrings.AppName);
             _trayIcon.Visible = true;
 
