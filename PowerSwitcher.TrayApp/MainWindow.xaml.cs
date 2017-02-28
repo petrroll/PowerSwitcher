@@ -74,6 +74,23 @@ namespace PowerSwitcher.TrayApp
             {
                 this.HideWithAnimation();
             }
+            else if (e.Key == Key.Down || e.Key == Key.Up)
+            {
+                handleUpDownArrows(sender, e);
+            }
+        }
+
+        private static void handleUpDownArrows(object sender, KeyEventArgs e)
+        {
+            var list = (sender as MainWindow).ElementsList;
+            var focusedElement = (Keyboard.FocusedElement as UIElement);
+            FocusNavigationDirection direction = FocusNavigationDirection.Next;
+
+            if (e.Key == Key.Down) { direction = FocusNavigationDirection.Next; }
+            else if (e.Key == Key.Up) { direction = FocusNavigationDirection.Previous; }
+
+            focusedElement.MoveFocus(new TraversalRequest(direction));
+            e.Handled = true;
         }
         #endregion
 

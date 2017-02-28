@@ -110,7 +110,7 @@
             Focusable="False"
             Margin="0"
             >
-        <ListBox KeyboardNavigation.TabNavigation="Cycle" SelectionMode="Single" ItemsSource="{Binding Schemas}" SelectedItem="{Binding ActiveSchema}" >
+        <ListBox x:Name="ElementsList" KeyboardNavigation.TabNavigation="Cycle" SelectionMode="Single" ItemsSource="{Binding Schemas}" SelectedItem="{Binding ActiveSchema}" IsSynchronizedWithCurrentItem="True" >
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Label Content="{Binding Name}" Tag="{Binding Guid}" MouseLeftButtonDown="Label_MouseLeftButtonDown" />
