@@ -14,7 +14,7 @@ Features:
 Feel free to buy me a beer at: [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=houskape%40gmail%2ecom&lc=CZ&item_name=PowerPlanSwitcher&item_number=042&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted)
 
 ### Special thanks to:
-- Icon made by [Cursor creative]http://www.flaticon.com/authors/cursor-creative from [flaticon.com](http://www.flaticon.com/)
+- Icon made by [Cursor creative](http://www.flaticon.com/authors/cursor-creative) from [flaticon.com](http://www.flaticon.com/)
 - [EarTrumpet](https://github.com/File-New-Project/EarTrumpet) project for flyout, interop stuff, and some other help :)
  - David Golden (@GoldenTao)
  - Rafael Rivera (@WithinRafael)
