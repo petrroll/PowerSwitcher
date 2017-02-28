@@ -46,6 +46,7 @@ namespace PowerSwitcher
         public void UpdateSchemas()
         {
             var newSchemas = powerWraper.GetCurrentSchemas();
+            //Add and update new / changed schemas
             foreach (var newSchema in newSchemas)
             {
                 var originalSchema = Schemas.FirstOrDefault(sch => sch.Guid == newSchema.Guid);
@@ -57,6 +58,13 @@ namespace PowerSwitcher
 
                 if (originalSchema.IsActive != newSchema.IsActive) { ((PowerSchema)originalSchema).IsActive = newSchema.IsActive; RaisePropertyChangedEvent(nameof(CurrentSchema)); }
                 if (originalSchema.Name != newSchema.Name) { ((PowerSchema)originalSchema).Name = newSchema.Name; }
+            }
+
+            //remove old schemas
+            foreach(var oldSchema in Schemas)
+            {
+                if (newSchemas.FirstOrDefault(sch => sch.Guid == oldSchema.Guid) == null)
+                { Schemas.Remove(oldSchema); }
             }
 
             var currentActiveSchema = getCurrentSchemaWithoutUpdate();
