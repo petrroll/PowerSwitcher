@@ -24,7 +24,7 @@ namespace PowerSwitcher
 
     public class PowerManager : ObservableObject, IPowerManager
     {
-        PowProfWrapper powerWraper;
+        Win32PowSchemasWrapper powerWraper;
         BatteryInfoWrapper batteryWrapper;
 
         public ObservableCollection<IPowerSchema> Schemas{ get; private set; }
@@ -34,7 +34,7 @@ namespace PowerSwitcher
 
         public PowerManager()
         {
-            powerWraper = new PowProfWrapper();
+            powerWraper = new Win32PowSchemasWrapper();
             batteryWrapper = new BatteryInfoWrapper(powerChangedEvent);
 
             Schemas = new ObservableCollection<IPowerSchema>();
@@ -83,7 +83,7 @@ namespace PowerSwitcher
             PowerSchema currSchema = null;
 
             currSchemaGuid = powerWraper.GetActiveGuid();
-            currSchema = (PowerSchema)Schemas.Where(s => s.Guid == currSchemaGuid).FirstOrDefault();
+            currSchema = (PowerSchema)Schemas.FirstOrDefault(s => s.Guid == currSchemaGuid);
 
             if (currSchema == null) { throw new NotImplementedException("Schemas relaoding not supported yet."); }
 

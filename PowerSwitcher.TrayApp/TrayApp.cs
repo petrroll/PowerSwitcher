@@ -1,4 +1,5 @@
-﻿using PowerSwitcher.TrayApp.Configuration;
+﻿using Petrroll.Helpers;
+using PowerSwitcher.TrayApp.Configuration;
 using PowerSwitcher.TrayApp.Resources;
 using System;
 using System.Diagnostics;
@@ -62,7 +63,7 @@ namespace PowerSwitcher.TrayApp
 
             var enableShortcutsToggleItem = contextMenuSettings.MenuItems.Add($"{AppStrings.ToggleOnShowrtcutSwitch} ({configuration.Data.ShowOnShortcutKeyModifier} + {configuration.Data.ShowOnShortcutKey})");
             enableShortcutsToggleItem.Checked = configuration.Data.ShowOnShortcutSwitch;
-            enableShortcutsToggleItem.Click += EnableShortcutsToggleItem_Click; ;
+            enableShortcutsToggleItem.Click += EnableShortcutsToggleItem_Click;
 
             var aboutItem = contextMenuRootItems.Add(AppStrings.About);
             aboutItem.Click += About_Click;

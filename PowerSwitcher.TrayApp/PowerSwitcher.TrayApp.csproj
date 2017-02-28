@@ -95,7 +95,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Configuration\PowerSwitcherConfiguration.cs" />
     <Compile Include="Extensions\BlurWindowExtensions.cs" />
     <Compile Include="Extensions\InvertableVisibilityConvertor.cs" />
@@ -175,9 +174,6 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\TrayIcon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

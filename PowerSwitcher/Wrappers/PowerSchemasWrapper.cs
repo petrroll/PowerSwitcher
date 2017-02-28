@@ -9,65 +9,7 @@ using System.Windows.Forms;
 namespace PowerSwitcher.Wrappers
 {
 
-    public class BatteryInfoWrapper : IDisposable
-    {
-
-
-        Microsoft.Win32.PowerModeChangedEventHandler powerChangedDelegate = null;
-        public BatteryInfoWrapper(Action<PowerPlugStatus> powerStatusChangedFunc)
-        {
-            powerChangedDelegate = (sender, e) => { powerStatusChangedFunc(GetCurrentChargingStatus()); };
-            Microsoft.Win32.SystemEvents.PowerModeChanged += powerChangedDelegate;
-        }
-
-        public PowerPlugStatus GetCurrentChargingStatus()
-        {
-            PowerStatus pwrStatus = SystemInformation.PowerStatus;
-            return (pwrStatus.PowerLineStatus == PowerLineStatus.Online) ? PowerPlugStatus.Online : PowerPlugStatus.Offline;
-        }
-
-        public int GetChargeValue()
-        {
-            PowerStatus pwrStatus = SystemInformation.PowerStatus;
-            return pwrStatus.BatteryLifeRemaining / 60;
-        }
-
-        #region IDisposable Support
-        private bool disposedValue = false; 
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposedValue) { return; }
-
-            if (disposing)
-            {
-                var tmpDelegate = powerChangedDelegate;
-                if (tmpDelegate == null) { return; }
-
-                Microsoft.Win32.SystemEvents.PowerModeChanged -= tmpDelegate;
-            }
-
-            disposedValue = true;
-        }
-
-        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-        // ~BatteryInfoWrapper() {
-        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-        //   Dispose(false);
-        // }
-        
-        public void Dispose()
-        {
-            Dispose(true);
-            //GC.SuppressFinalize(this); //No destructor so isn't required yet
-        }
-        #endregion
-
-
-    }
-
-
-    public class PowProfWrapper
+    public class Win32PowSchemasWrapper
     {
 
         public Guid GetActiveGuid()
@@ -185,7 +127,7 @@ namespace PowerSwitcher.Wrappers
     }
 
     //Deprecated wrapper, not used anymore (useful for reference).
-    public class DefaultPowerSchemes
+    public class DefaultPowSchemasWrapper
     {
         public List<PowerSchema> GetCurrentSchemas()
         {
@@ -199,8 +141,8 @@ namespace PowerSwitcher.Wrappers
         }
     }
 
-    //Deprecated wrapper, not used anymore (replaced by PowProWrapper)
-    public class WmiPowerSchemesWrapper
+    //Deprecated wrapper, not used anymore (replaced by Win32PowSchemasWrapper)
+    public class WmiPowerSchemasWrapper
     {
         public List<PowerSchema> GetCurrentSchemas()
         {
@@ -226,12 +168,5 @@ namespace PowerSwitcher.Wrappers
             return schemas;
         }
 
-    }
-
-    public class PowerSwitcherWrappersException : System.Exception
-    {
-        public PowerSwitcherWrappersException() { }
-        public PowerSwitcherWrappersException(string message) : base(message) { }
-        public PowerSwitcherWrappersException(string message, System.Exception inner) : base(message, inner) { }
     }
 }

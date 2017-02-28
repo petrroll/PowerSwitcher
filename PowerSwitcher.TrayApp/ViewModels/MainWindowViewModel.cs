@@ -30,18 +30,18 @@ namespace PowerSwitcher.TrayApp.ViewModels
             pwrManager.PropertyChanged += PwrManager_PropertyChanged;
             config.Data.PropertyChanged += SettingsData_PropertyChanged;
 
-            updateOnlyDefaultSchemas();
+            updateOnlyDefaultSchemasSetting();
         }
 
         private void SettingsData_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(PowerSwitcherSettings.ShowOnlyDefaultSchemas))
             {
-                updateOnlyDefaultSchemas();
+                updateOnlyDefaultSchemasSetting();
             }
         }
 
-        private void updateOnlyDefaultSchemas()
+        private void updateOnlyDefaultSchemasSetting()
         {
             if (!config.Data.ShowOnlyDefaultSchemas) { Schemas = pwrManager.Schemas; RaisePropertyChangedEvent(nameof(Schemas)); }
             else

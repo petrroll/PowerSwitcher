@@ -2,7 +2,7 @@
 using System.IO;
 using System.Xml.Serialization;
 
-namespace PowerSwitcher.TrayApp.Configuration
+namespace Petrroll.Helpers
 {
 
     public interface IConfigurationManger<T> where T : class, new()
@@ -15,10 +15,10 @@ namespace PowerSwitcher.TrayApp.Configuration
     {
         public ConfigurationManagerXML(string pathToFile)
         {
-            pathToConfigFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Petrroll", "PowerSwitcher", pathToFile);
+            pathToConfigFile = Path.Combine(pathToFile);
         }
 
-        private string pathToConfigFile;
+        private readonly string pathToConfigFile;
         public void SerializeConfiguration(T configuration)
         {
             try
@@ -91,8 +91,8 @@ namespace PowerSwitcher.TrayApp.Configuration
     public class ConfigurationInstance<T> where T : class, new()
     {
         public T Data { get; private set; }
+        readonly IConfigurationManger<T> configManager;
 
-        IConfigurationManger<T> configManager;
         public ConfigurationInstance(IConfigurationManger<T> configurationManager)
         {
             this.configManager = configurationManager;

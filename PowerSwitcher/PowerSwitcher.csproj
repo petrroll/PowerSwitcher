@@ -54,7 +54,9 @@
     <Compile Include="PowerSchema.cs" />
     <Compile Include="PowerManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Wrappers\Wrappers.cs" />
+    <Compile Include="Wrappers\BatteryInfoWrapper.cs" />
+    <Compile Include="Wrappers\Exception.cs" />
+    <Compile Include="Wrappers\PowerSchemasWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Petrroll.Helpers\Petrroll.Helpers.csproj">

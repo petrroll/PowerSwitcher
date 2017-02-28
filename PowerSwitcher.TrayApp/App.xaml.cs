@@ -1,6 +1,9 @@
-﻿using PowerSwitcher.TrayApp.Configuration;
+﻿using Petrroll.Helpers;
+using PowerSwitcher.TrayApp.Configuration;
 using PowerSwitcher.TrayApp.Services;
+using System;
 using System.Globalization;
+using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Windows;
@@ -23,7 +26,11 @@ namespace PowerSwitcher.TrayApp
         {
             if (!tryToCreateMutex()) return;
 
-            var configurationManager = new ConfigurationManagerXML<PowerSwitcherSettings>("PowerSwitcherSettings.xml");
+            var configurationManager = new ConfigurationManagerXML<PowerSwitcherSettings>(Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), 
+                "Petrroll", "PowerSwitcher", "PowerSwitcherSettings.xml"
+                ));
+
             Configuration = new ConfigurationInstance<PowerSwitcherSettings>(configurationManager);
 
             HotKeyManager = new HotKeyService();

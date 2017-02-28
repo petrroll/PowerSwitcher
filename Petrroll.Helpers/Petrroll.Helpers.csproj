@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration.cs" />
     <Compile Include="LINQ.cs" />
     <Compile Include="ObservableCollectionWhereShim.cs" />
     <Compile Include="ObservableObject.cs" />
