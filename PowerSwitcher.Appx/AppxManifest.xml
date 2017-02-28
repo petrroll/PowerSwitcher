@@ -26,7 +26,7 @@
   <Applications>
     <Application Id="PowerPlanSwitcher" Executable="PowerSwitcher.TrayApp.exe" EntryPoint="Windows.FullTrustApplication">
       <uap:VisualElements
-       BackgroundColor="#464646"
+       BackgroundColor="transparent"
        DisplayName="PowerPlanSwitcher"
        Square150x150Logo="Assets/Square150x150Logo.png"
        Square44x44Logo="Assets/Square44x44Logo.png"

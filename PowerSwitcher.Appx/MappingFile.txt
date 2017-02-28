@@ -3,6 +3,6 @@
 "..\Build\Release\PowerSwitcher.dll"				"PowerSwitcher.dll"
 "..\Build\Release\Petrroll.Helpers.dll"				"Petrroll.Helpers.dll"
 "..\PowerSwitcher.Assets\icon_150x150.png"			"Assets\Square150x150Logo.png"
-"..\PowerSwitcher.Assets\icon_50x50.png"			"Assets\StoreLogo50x50.png"
-"..\PowerSwitcher.Assets\icon_44x44.png"			"Assets\Square44x44Logo.png"
+"..\PowerSwitcher.Assets\tile_50x50.png"			"Assets\StoreLogo50x50.png"
+"..\PowerSwitcher.Assets\tile_44x44.png"			"Assets\Square44x44Logo.png"
 "AppxManifest.xml"									"AppxManifest.xml"
