@@ -7,8 +7,8 @@ Features:
 - Automatic schema switching when AC adapter gets connected / disconnected
 - Launch on Windows startup
 - Flyout shortcut (Shift+Win+S)
-- Navigate flyout with keyboard
-- Change all settings by right-clicking on tray icon :)
+- Navigate the flyout with keyboard (use tab)
+- Change all settings by right-clicking on the tray icon :)
 
 ### Other:
 Feel free to buy me a beer at: [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=houskape%40gmail%2ecom&lc=CZ&item_name=PowerPlanSwitcher&item_number=042&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted)
