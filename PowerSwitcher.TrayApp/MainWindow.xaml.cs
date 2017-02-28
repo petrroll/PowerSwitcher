@@ -70,7 +70,7 @@ namespace PowerSwitcher.TrayApp
 
         private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Escape)
+            if (e.Key == Key.Escape || e.Key == Key.Enter)
             {
                 this.HideWithAnimation();
             }
