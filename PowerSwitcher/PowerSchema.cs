@@ -31,5 +31,10 @@ namespace PowerSwitcher
             this.Guid = guid;
             this.IsActive = isActive;
         }
+
+        public override string ToString()
+        {
+            return $"{Name}:{IsActive}";
+        }
     }
 }
