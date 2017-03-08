@@ -109,6 +109,7 @@
             PanningMode="VerticalOnly"
             Focusable="False"
             Margin="0"
+            PreviewMouseWheel="LayoutRoot_PreviewMouseWheel"
             >
         <ListBox x:Name="ElementsList" KeyboardNavigation.TabNavigation="Cycle" SelectionMode="Single" ItemsSource="{Binding Schemas}" SelectedItem="{Binding ActiveSchema}" IsSynchronizedWithCurrentItem="True" >
             <ListBox.ItemTemplate>

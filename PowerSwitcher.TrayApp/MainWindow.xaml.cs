@@ -149,5 +149,12 @@ namespace PowerSwitcher.TrayApp
                 this.HideWithAnimation();
             }
         }
+
+        private void LayoutRoot_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            ScrollViewer scv = (ScrollViewer)sender;
+            scv.ScrollToVerticalOffset(scv.VerticalOffset - e.Delta);
+            e.Handled = true;
+        }
     }
 }
