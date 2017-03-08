@@ -45,19 +45,22 @@ namespace PowerSwitcher
 
         public void UpdateSchemas()
         {
+            var currSchemaGuid = powerWraper.GetActiveGuid();
             var newSchemas = powerWraper.GetCurrentSchemas();
+
             //Add and update new / changed schemas
             foreach (var newSchema in newSchemas)
             {
                 var originalSchema = Schemas.FirstOrDefault(sch => sch.Guid == newSchema.Guid);
-                if (originalSchema == null)
-                {
-                    var insertToIndex = Math.Min(newSchemas.IndexOf(newSchema), Schemas.Count);
-                    Schemas.Insert(insertToIndex, newSchema); continue;
-                }
+                if (originalSchema == null) { insertNewSchema(newSchemas, newSchema); }
+               
+                if (newSchema.Guid == currSchemaGuid) { handleCurrentSchema(newSchema, originalSchema); }
 
-                if (originalSchema.IsActive != newSchema.IsActive) { ((PowerSchema)originalSchema).IsActive = newSchema.IsActive; RaisePropertyChangedEvent(nameof(CurrentSchema)); }
-                if (originalSchema.Name != newSchema.Name) { ((PowerSchema)originalSchema).Name = newSchema.Name; }
+                if (newSchema.Guid != currSchemaGuid && originalSchema?.IsActive == true)
+                { updateSchema(originalSchema, false); }
+                
+                if (originalSchema != null && originalSchema.Name != newSchema.Name)
+                { ((PowerSchema)originalSchema).Name = newSchema.Name; }
             }
 
             //remove old schemas
@@ -66,12 +69,24 @@ namespace PowerSwitcher
                 if (newSchemas.FirstOrDefault(sch => sch.Guid == oldSchema.Guid) == null)
                 { Schemas.Remove(oldSchema); }
             }
+        }
 
-            var currentActiveSchema = getCurrentSchemaWithoutUpdate();
-            if (currentActiveSchema.IsActive) { return; }
 
-            currentActiveSchema.IsActive = true;
-            RaisePropertyChangedEvent(nameof(CurrentSchema));
+        private void handleCurrentSchema(PowerSchema newSchema, IPowerSchema originalSchema)
+        {
+            if (originalSchema == null) { updateSchema(newSchema, true); }
+            else if (originalSchema.IsActive == false) { updateSchema(originalSchema, true); }
+        }
+
+        private void insertNewSchema(List<PowerSchema> newSchemas, PowerSchema newSchema)
+        {
+            var insertToIndex = Math.Min(newSchemas.IndexOf(newSchema), Schemas.Count);
+            Schemas.Insert(insertToIndex, newSchema);
+        }
+
+        private void updateSchema(IPowerSchema schema, bool isActive)
+        {
+            ((PowerSchema)schema).IsActive = isActive; RaisePropertyChangedEvent(nameof(CurrentSchema));
         }
 
         public void SetPowerSchema(IPowerSchema schema)
@@ -83,19 +98,6 @@ namespace PowerSwitcher
         {
             powerWraper.SetActiveGuid(guid);
             UpdateSchemas();
-        }
-
-        private PowerSchema getCurrentSchemaWithoutUpdate()
-        {
-            Guid currSchemaGuid;
-            PowerSchema currSchema = null;
-
-            currSchemaGuid = powerWraper.GetActiveGuid();
-            currSchema = (PowerSchema)Schemas.FirstOrDefault(s => s.Guid == currSchemaGuid);
-
-            if (currSchema == null) { throw new NotImplementedException("Schemas relaoding not supported yet."); }
-
-            return currSchema;
         }
 
         private void powerChangedEvent(PowerPlugStatus newStatus)
