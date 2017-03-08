@@ -124,7 +124,7 @@
     <value>http://github.com/Petrroll/PowerSwitcher</value>
   </data>
   <data name="AppName" xml:space="preserve">
-    <value>Power Plan Switcher</value>
+    <value>PowerPlanSwitcher</value>
   </data>
   <data name="AutomaticOnOffACSwitch" xml:space="preserve">
     <value>Automaticly change schema when on AC</value>

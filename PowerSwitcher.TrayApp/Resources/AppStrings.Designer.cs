@@ -79,7 +79,7 @@ namespace PowerSwitcher.TrayApp.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Power Plan Switcher.
+        ///   Looks up a localized string similar to PowerPlanSwitcher.
         /// </summary>
         internal static string AppName {
             get {
