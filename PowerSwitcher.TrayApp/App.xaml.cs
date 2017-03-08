@@ -93,8 +93,8 @@ namespace PowerSwitcher.TrayApp
         private void App_OnExit(object sender, ExitEventArgs e)
         {
             DisposeMutex();
-            PowerManager.Dispose();
-            HotKeyManager.Dispose();
+            PowerManager?.Dispose();
+            HotKeyManager?.Dispose();
         }
 
         ~App()
