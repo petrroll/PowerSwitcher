@@ -37,12 +37,13 @@ namespace Petrroll.Helpers
         protected override void Obs_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (filterOn) { base.Obs_CollectionChanged(sender, e); }
-            else { RaiseCollectionChanged(e); }
+            else { updateNumberOfFilteredItems(); RaiseCollectionChanged(e); }
         }
 
         protected override void Sch_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (filterOn) { base.Sch_PropertyChanged(sender, e); }
+            else { updateNumberOfFilteredItems(); }
         }
         #endregion
 
@@ -69,6 +70,9 @@ namespace Petrroll.Helpers
                 if (Predicate(element)) { indexInFiltered++; }
                 else
                 {
+                    #if DEBUG
+                    Console.WriteLine($"RF:Removed:{element}");
+                    #endif
                     RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new List<T> { element }, indexInFiltered));
                 }
             }
@@ -81,6 +85,9 @@ namespace Petrroll.Helpers
             {
                 if (!Predicate(element))
                 {
+                    #if DEBUG
+                    Console.WriteLine($"AF:Added:{element}");
+                    #endif
                     RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new List<T> { element }, indexInNotFiltered));
                 }
                 indexInNotFiltered++;
@@ -106,7 +113,7 @@ namespace Petrroll.Helpers
         public Func<T, bool> Predicate { get; private set; }
         public C BaseCollection { get; private set; }
 
-        protected int numberOfItems;
+        protected int numberOfFilteredItems;
         protected IEnumerable<T> filteredCollection => BaseCollection.Where(Predicate);
         #endregion
 
@@ -116,7 +123,7 @@ namespace Petrroll.Helpers
             Predicate = predicate;
             BaseCollection = baseCollection;
 
-            numberOfItems = filteredCollection.Count();
+            numberOfFilteredItems = filteredCollection.Count();
 
             baseCollection.CollectionChanged += Obs_CollectionChanged;
             baseCollection.ForEach(sch => sch.PropertyChanged += Sch_PropertyChanged);
@@ -126,17 +133,22 @@ namespace Petrroll.Helpers
         #region ChangedEvents
         protected virtual void Sch_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            int oldNumberOfItems = numberOfItems;
-            int newNumberOfItems = filteredCollection.Count();
+            int oldNumberOfItems = numberOfFilteredItems;
+            updateNumberOfFilteredItems();
 
-            numberOfItems = newNumberOfItems;
-            if (oldNumberOfItems < newNumberOfItems)
+            if (oldNumberOfItems < numberOfFilteredItems)
             {
+                #if DEBUG
+                Console.WriteLine($"AC:Added:{sender}");
+                #endif
                 var changeIndex = BaseCollection.Take(BaseCollection.IndexOf(sender)).Count(Predicate);
                 RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, sender, changeIndex));
             }
-            else if (oldNumberOfItems > newNumberOfItems)
+            else if (oldNumberOfItems > numberOfFilteredItems)
             {
+                #if DEBUG
+                Console.WriteLine($"DC:Added:{sender}"); 
+                #endif
                 var changeIndex = BaseCollection.Take(BaseCollection.IndexOf(sender)).Count(Predicate);
                 RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, sender, changeIndex));
             }
@@ -144,7 +156,7 @@ namespace Petrroll.Helpers
 
         protected virtual void Obs_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            numberOfItems = filteredCollection.Count();
+            updateNumberOfFilteredItems();
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
@@ -169,6 +181,8 @@ namespace Petrroll.Helpers
             if (e.NewItems != null) { e.NewItems.ForEach(sch => ((T)sch).PropertyChanged += Sch_PropertyChanged); }
             if (e.OldItems != null) { e.OldItems.ForEach(sch => ((T)sch).PropertyChanged -= Sch_PropertyChanged); }
         }
+
+        protected void updateNumberOfFilteredItems() => numberOfFilteredItems = filteredCollection.Count();
         #endregion
 
         #region HandleOperations
