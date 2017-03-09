@@ -45,17 +45,7 @@
         <Style TargetType="{x:Type ListBoxItem}">
             <Setter Property="FocusVisualStyle">
                 <Setter.Value>
-                    <Style>
-                        <Setter Property="Control.Template">
-                            <Setter.Value>
-                                <ControlTemplate>
-                                    <Rectangle StrokeThickness="0"  
-                                        Stroke="White"  
-                                        SnapsToDevicePixels="true"/>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
+                    <x:Null/>
                 </Setter.Value>
             </Setter>
             <Setter Property="Padding" Value="12, 0, 0, 0"/>
@@ -128,7 +118,7 @@
             Margin="0"
             PreviewMouseWheel="LayoutRoot_PreviewMouseWheel"
             >
-        <ListBox x:Name="ElementsList" KeyboardNavigation.TabNavigation="Cycle" SelectionMode="Single" ItemsSource="{Binding Schemas}" SelectedItem="{Binding ActiveSchema}" IsSynchronizedWithCurrentItem="True" >
+        <ListBox x:Name="ElementsList" KeyboardNavigation.TabNavigation="Cycle" Focusable="False" SelectionMode="Single" ItemsSource="{Binding Schemas}" SelectedItem="{Binding ActiveSchema}" IsSynchronizedWithCurrentItem="True" >
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Label Content="{Binding Name}" Tag="{Binding Guid}" MouseLeftButtonDown="Label_MouseLeftButtonDown" />
