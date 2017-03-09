@@ -16,6 +16,7 @@ namespace PowerSwitcher.TrayApp
     public partial class App : Application
     {
         public HotKeyService HotKeyManager { get; private set; }
+        public bool HotKeyFailed { get; private set; }
 
         public IPowerManager PowerManager { get; private set; }
         public TrayApp TrayApp { get; private set; }
@@ -34,6 +35,7 @@ namespace PowerSwitcher.TrayApp
             Configuration = new ConfigurationInstance<PowerSwitcherSettings>(configurationManager);
 
             HotKeyManager = new HotKeyService();
+            HotKeyFailed = false;
 
             PowerManager = new PowerManager();
             MainWindow = new MainWindow();
@@ -41,6 +43,8 @@ namespace PowerSwitcher.TrayApp
 
             Configuration.Data.PropertyChanged += Configuration_PropertyChanged;
             if (Configuration.Data.ShowOnShortcutSwitch) { registerHotkeyFromConfiguration(); }
+
+            TrayApp.CreateAltMenu();
         }
 
         private void Configuration_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -57,14 +61,15 @@ namespace PowerSwitcher.TrayApp
             HotKeyManager.Unregister(new HotKey(Configuration.Data.ShowOnShortcutKey, Configuration.Data.ShowOnShortcutKeyModifier));
         }
 
-        private HotKey registerHotkeyFromConfiguration()
+        private bool registerHotkeyFromConfiguration()
         {
             var newHotKey = new HotKey(Configuration.Data.ShowOnShortcutKey, Configuration.Data.ShowOnShortcutKeyModifier);
 
-            HotKeyManager.Register(newHotKey);
+            bool success = HotKeyManager.Register(newHotKey);
+            if(!success) { HotKeyFailed = true; return false; }
             newHotKey.HotKeyFired += (this.MainWindow as MainWindow).ToggleWindowVisibility;
 
-            return newHotKey;
+            return true;
         }
 
         private bool tryToCreateMutex()

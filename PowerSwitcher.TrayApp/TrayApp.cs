@@ -32,6 +32,18 @@ namespace PowerSwitcher.TrayApp
             _trayIcon = new WF.NotifyIcon();
             _trayIcon.MouseClick += TrayIcon_MouseClick;
 
+            _trayIcon.Icon = new System.Drawing.Icon(Application.GetResourceStream(new Uri("pack://application:,,,/PowerSwitcher.TrayApp;component/Tray.ico")).Stream, WF.SystemInformation.SmallIconSize);
+            _trayIcon.Text = string.Concat(AppStrings.AppName);
+            _trayIcon.Visible = true;
+
+            this.ShowFlyout += (((App)Application.Current).MainWindow as MainWindow).ToggleWindowVisibility;
+
+            //Run automatic on-off-AC change at boot
+            powerStatusChanged();
+        }
+
+        public void CreateAltMenu()
+        {
             var contextMenuRoot = new WF.ContextMenu();
             contextMenuRoot.Popup += ContextMenu_Popup;
 
@@ -62,6 +74,7 @@ namespace PowerSwitcher.TrayApp
             onlyDefaultSchemasItem.Click += OnlyDefaultSchemas_Click;
 
             var enableShortcutsToggleItem = contextMenuSettings.MenuItems.Add($"{AppStrings.ToggleOnShowrtcutSwitch} ({configuration.Data.ShowOnShortcutKeyModifier} + {configuration.Data.ShowOnShortcutKey})");
+            enableShortcutsToggleItem.Enabled = !(Application.Current as App).HotKeyFailed;
             enableShortcutsToggleItem.Checked = configuration.Data.ShowOnShortcutSwitch;
             enableShortcutsToggleItem.Click += EnableShortcutsToggleItem_Click;
 
@@ -73,15 +86,6 @@ namespace PowerSwitcher.TrayApp
 
             var exitItem = contextMenuRootItems.Add(AppStrings.Exit);
             exitItem.Click += Exit_Click;
-
-            _trayIcon.Icon = new System.Drawing.Icon(Application.GetResourceStream(new Uri("pack://application:,,,/PowerSwitcher.TrayApp;component/Tray.ico")).Stream, WF.SystemInformation.SmallIconSize);
-            _trayIcon.Text = string.Concat(AppStrings.AppName);
-            _trayIcon.Visible = true;
-
-            this.ShowFlyout += (((App)Application.Current).MainWindow as MainWindow).ToggleWindowVisibility;
-
-            //Run automatic on-off-AC change at boot
-            powerStatusChanged();
         }
 
         #endregion
@@ -104,6 +108,7 @@ namespace PowerSwitcher.TrayApp
 
             configuration.Data.ShowOnShortcutSwitch = !configuration.Data.ShowOnShortcutSwitch;
             enableShortcutsToggleItem.Checked = configuration.Data.ShowOnShortcutSwitch;
+            enableShortcutsToggleItem.Enabled = !(Application.Current as App).HotKeyFailed;
 
             configuration.Save();
         }

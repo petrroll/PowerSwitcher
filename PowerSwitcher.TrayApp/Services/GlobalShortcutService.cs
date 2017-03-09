@@ -52,14 +52,20 @@ namespace PowerSwitcher.TrayApp.Services
         }
 
 
-        public void Register(HotKey hotkey)
+        public bool Register(HotKey hotkey)
         {
             if(_dictHotKeyToCalBackProc.ContainsKey(hotkey.Id)) { Unregister(_dictHotKeyToCalBackProc[hotkey.Id]); }
 
             var success = RegisterHotKey(IntPtr.Zero, hotkey.Id, (UInt32)hotkey.KeyModifiers, (UInt32)hotkey.VirtualKeyCode);
-            if (!success) { throw new PowerSwitcherWrappersException($"RegisterHotKey() failed|{Marshal.GetLastWin32Error()}"); }
+            if (!success)
+            {
+                //ERROR_HOTKEY_ALREADY_REGISTERED
+                if (Marshal.GetLastWin32Error() == 1409) { return false; }
+                else { throw new PowerSwitcherWrappersException($"RegisterHotKey() failed|{Marshal.GetLastWin32Error()}"); }
+            }
 
             _dictHotKeyToCalBackProc.Add(hotkey.Id, hotkey);
+            return true;
         }
 
         public void Unregister(HotKey hotkey)
