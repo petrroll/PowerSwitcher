@@ -4,7 +4,6 @@ using System.Linq;
 using System.Management;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 
 namespace PowerSwitcher.Wrappers
 {
@@ -105,19 +104,16 @@ namespace PowerSwitcher.Wrappers
 
         #region DLL imports
 
-        [DllImport("kernel32.dll")]
-        private static extern int GetSystemDefaultLCID();
-
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern IntPtr LocalFree(IntPtr hMem);
 
-        [DllImportAttribute("powrprof.dll", EntryPoint = "PowerSetActiveScheme")]
+        [DllImport("powrprof.dll", EntryPoint = "PowerSetActiveScheme")]
         private static extern uint PowerSetActiveScheme(IntPtr UserPowerKey, ref Guid ActivePolicyGuid);
 
-        [DllImportAttribute("powrprof.dll", EntryPoint = "PowerGetActiveScheme")]
+        [DllImport("powrprof.dll", EntryPoint = "PowerGetActiveScheme")]
         private static extern uint PowerGetActiveScheme(IntPtr UserPowerKey, out IntPtr ActivePolicyGuid);
 
-        [DllImportAttribute("powrprof.dll", EntryPoint = "PowerReadFriendlyName")]
+        [DllImport("powrprof.dll", EntryPoint = "PowerReadFriendlyName")]
         private static extern uint PowerReadFriendlyName(IntPtr RootPowerKey, ref Guid SchemeGuid, IntPtr SubGroupOfPowerSettingsGuid, IntPtr PowerSettingGuid, IntPtr BufferPtr, ref uint BufferSize);
 
         [DllImport("PowrProf.dll")]

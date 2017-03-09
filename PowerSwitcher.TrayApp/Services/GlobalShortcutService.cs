@@ -39,10 +39,10 @@ namespace PowerSwitcher.TrayApp.Services
     {
         private Dictionary<int, HotKey> _dictHotKeyToCalBackProc;
 
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", SetLastError = true)]
         private static extern bool RegisterHotKey(IntPtr hWnd, int id, UInt32 fsModifiers, UInt32 vlc);
 
-        [DllImport("user32.dll")]
+        [DllImport("user32.dll", SetLastError = true)]
         private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
 
         public HotKeyService()
@@ -57,7 +57,7 @@ namespace PowerSwitcher.TrayApp.Services
             if(_dictHotKeyToCalBackProc.ContainsKey(hotkey.Id)) { Unregister(_dictHotKeyToCalBackProc[hotkey.Id]); }
 
             var success = RegisterHotKey(IntPtr.Zero, hotkey.Id, (UInt32)hotkey.KeyModifiers, (UInt32)hotkey.VirtualKeyCode);
-            if (!success) { throw new PowerSwitcherWrappersException($"RegisterHotKey() failed"); }
+            if (!success) { throw new PowerSwitcherWrappersException($"RegisterHotKey() failed|{Marshal.GetLastWin32Error()}"); }
 
             _dictHotKeyToCalBackProc.Add(hotkey.Id, hotkey);
         }
@@ -67,7 +67,7 @@ namespace PowerSwitcher.TrayApp.Services
             if (!_dictHotKeyToCalBackProc.ContainsKey(hotkey.Id)) { throw new InvalidOperationException($"Trying to unregister not-registred Hotkey {hotkey.Id}"); }
 
             var success = UnregisterHotKey(IntPtr.Zero, hotkey.Id); 
-            if (!success) { throw new PowerSwitcherWrappersException($"UnregisterHotKey() failed"); }
+            if (!success) { throw new PowerSwitcherWrappersException($"UnregisterHotKey() failed|{Marshal.GetLastWin32Error()}"); }
 
             _dictHotKeyToCalBackProc.Remove(hotkey.Id);          
         }
