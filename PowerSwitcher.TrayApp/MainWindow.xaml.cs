@@ -33,8 +33,11 @@ namespace PowerSwitcher.TrayApp
 
             // Move keyboard focus to the first element. Disabled this since it is ugly but not sure invisible
             // visuals are preferrable.
-            // Activated += (s,e) => MoveFocus(new TraversalRequest(FocusNavigationDirection.First));
-
+            Activated += (s, e) =>
+            {
+                var container = ElementsList.ItemContainerGenerator.ContainerFromItem(ElementsList.SelectedItem) as FrameworkElement;
+                if (container != null) { container.Focus(); }
+            };
             SourceInitialized += (s, e) => UpdateTheme();
         }
 

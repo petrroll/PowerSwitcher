@@ -49,7 +49,7 @@
                         <Setter Property="Control.Template">
                             <Setter.Value>
                                 <ControlTemplate>
-                                    <Rectangle StrokeThickness="2"  
+                                    <Rectangle StrokeThickness="0"  
                                         Stroke="White"  
                                         SnapsToDevicePixels="true"/>
                                 </ControlTemplate>
