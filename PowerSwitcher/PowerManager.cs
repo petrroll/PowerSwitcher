@@ -28,7 +28,7 @@ namespace PowerSwitcher
         BatteryInfoWrapper batteryWrapper;
 
         public ObservableCollection<IPowerSchema> Schemas{ get; private set; }
-        public IPowerSchema CurrentSchema { get { return Schemas.FirstOrDefault(sch => sch.IsActive); } }
+        public IPowerSchema CurrentSchema { get; private set; }
 
         public PowerPlugStatus CurrentPowerStatus { get; private set; }
 
@@ -52,30 +52,38 @@ namespace PowerSwitcher
             foreach (var newSchema in newSchemas)
             {
                 var originalSchema = Schemas.FirstOrDefault(sch => sch.Guid == newSchema.Guid);
-                if (originalSchema == null) { insertNewSchema(newSchemas, newSchema); }
+                if (originalSchema == null) { insertNewSchema(newSchemas, newSchema); originalSchema = newSchema; }
                
-                if (newSchema.Guid == currSchemaGuid) { handleCurrentSchema(newSchema, originalSchema); }
-
-                if (newSchema.Guid != currSchemaGuid && originalSchema?.IsActive == true)
-                { updateSchema(originalSchema, false); }
+                if (newSchema.Guid == currSchemaGuid && originalSchema?.IsActive != true)
+                { setNewCurrSchema(originalSchema); }
                 
-                if (originalSchema != null && originalSchema.Name != newSchema.Name)
+                if (originalSchema?.Name != newSchema.Name)
                 { ((PowerSchema)originalSchema).Name = newSchema.Name; }
             }
 
+            if(!Schemas.Any(sch => currSchemaGuid == sch.Guid))
+            {
+                noSchemaIsActive();
+            }
+
             //remove old schemas
-            foreach(var oldSchema in Schemas)
+            foreach (var oldSchema in Schemas)
             {
                 if (newSchemas.FirstOrDefault(sch => sch.Guid == oldSchema.Guid) == null)
                 { Schemas.Remove(oldSchema); }
             }
         }
 
-
-        private void handleCurrentSchema(PowerSchema newSchema, IPowerSchema originalSchema)
+        private void noSchemaIsActive()
         {
-            if (originalSchema == null) { updateSchema(newSchema, true); }
-            else if (originalSchema.IsActive == false) { updateSchema(originalSchema, true); }
+            var oldActive = Schemas.FirstOrDefault(sch => sch.IsActive);
+            if (oldActive != null)
+            {
+                ((PowerSchema)oldActive).IsActive = false;
+
+                CurrentSchema = null;
+                RaisePropertyChangedEvent(nameof(CurrentSchema));
+            }
         }
 
         private void insertNewSchema(List<PowerSchema> newSchemas, PowerSchema newSchema)
@@ -84,9 +92,15 @@ namespace PowerSwitcher
             Schemas.Insert(insertToIndex, newSchema);
         }
 
-        private void updateSchema(IPowerSchema schema, bool isActive)
+        private void setNewCurrSchema(IPowerSchema newActiveSchema)
         {
-            ((PowerSchema)schema).IsActive = isActive; RaisePropertyChangedEvent(nameof(CurrentSchema));
+            var oldActiveSchema = Schemas.FirstOrDefault(sch => sch.IsActive);
+
+            ((PowerSchema)newActiveSchema).IsActive = true;
+            CurrentSchema = newActiveSchema;
+            RaisePropertyChangedEvent(nameof(CurrentSchema));
+
+            if (oldActiveSchema != null) { ((PowerSchema)oldActiveSchema).IsActive = false; }
         }
 
         public void SetPowerSchema(IPowerSchema schema)
@@ -102,6 +116,8 @@ namespace PowerSwitcher
 
         private void powerChangedEvent(PowerPlugStatus newStatus)
         {
+            if(newStatus == CurrentPowerStatus) { return; }
+
             CurrentPowerStatus = newStatus;
             RaisePropertyChangedEvent(nameof(CurrentPowerStatus));
         }
