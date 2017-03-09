@@ -4,6 +4,7 @@ using PowerSwitcher.TrayApp.Resources;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using WF = System.Windows.Forms;
 
@@ -78,11 +79,8 @@ namespace PowerSwitcher.TrayApp
             enableShortcutsToggleItem.Checked = configuration.Data.ShowOnShortcutSwitch;
             enableShortcutsToggleItem.Click += EnableShortcutsToggleItem_Click;
 
-            var aboutItem = contextMenuRootItems.Add(AppStrings.About);
+            var aboutItem = contextMenuRootItems.Add($"{AppStrings.About} ({Assembly.GetEntryAssembly().GetName().Version})");
             aboutItem.Click += About_Click;
-
-            var iconLicenceItem = contextMenuRootItems.Add(AppStrings.IconLicence);
-            iconLicenceItem.Click += IconLicenceItem_Click;
 
             var exitItem = contextMenuRootItems.Add(AppStrings.Exit);
             exitItem.Click += Exit_Click;
