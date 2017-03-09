@@ -7,6 +7,7 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Windows;
+using System.Windows.Interop;
 
 namespace PowerSwitcher.TrayApp
 {
@@ -18,6 +19,8 @@ namespace PowerSwitcher.TrayApp
         public HotKeyService HotKeyManager { get; private set; }
         public bool HotKeyFailed { get; private set; }
 
+        public PowerSettingsNotificationService PowerSettingsNotificationManager { get; private set; }
+
         public IPowerManager PowerManager { get; private set; }
         public TrayApp TrayApp { get; private set; }
         public ConfigurationInstance<PowerSwitcherSettings> Configuration { get; private set; }
@@ -28,7 +31,7 @@ namespace PowerSwitcher.TrayApp
             if (!tryToCreateMutex()) return;
 
             var configurationManager = new ConfigurationManagerXML<PowerSwitcherSettings>(Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), 
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 "Petrroll", "PowerSwitcher", "PowerSwitcherSettings.xml"
                 ));
 
@@ -37,14 +40,26 @@ namespace PowerSwitcher.TrayApp
             HotKeyManager = new HotKeyService();
             HotKeyFailed = false;
 
+            PowerSettingsNotificationManager = new PowerSettingsNotificationService();
+
             PowerManager = new PowerManager();
             MainWindow = new MainWindow();
             TrayApp = new TrayApp(PowerManager, Configuration); //Has to be last because it hooks to MainWindow
+            setupPowerNotificationManager();
 
             Configuration.Data.PropertyChanged += Configuration_PropertyChanged;
             if (Configuration.Data.ShowOnShortcutSwitch) { registerHotkeyFromConfiguration(); }
 
             TrayApp.CreateAltMenu();
+        }
+
+        private void setupPowerNotificationManager()
+        {
+            IntPtr handle = new WindowInteropHelper(MainWindow).Handle;
+            HwndSource source = HwndSource.FromHwnd(handle);
+            source.AddHook(new HwndSourceHook(PowerSettingsNotificationManager.WndProc));
+
+            PowerSettingsNotificationManager.RegisterForPowerNotifications(handle);
         }
 
         private void Configuration_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

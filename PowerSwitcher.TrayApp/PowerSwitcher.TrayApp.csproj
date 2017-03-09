@@ -106,6 +106,7 @@
       <DependentUpon>AppStrings.resx</DependentUpon>
     </Compile>
     <Compile Include="Services\GlobalShortcutService.cs" />
+    <Compile Include="Services\PowerSettingsNotificationService.cs" />
     <Compile Include="ViewModels\MainWindowDesignViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="Services\AccentColorService.cs" />
