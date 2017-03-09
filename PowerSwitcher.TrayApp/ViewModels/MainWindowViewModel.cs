@@ -16,7 +16,7 @@ namespace PowerSwitcher.TrayApp.ViewModels
         public IPowerSchema ActiveSchema
         {
             get { return pwrManager.CurrentSchema; }
-            set { if (value != null) { pwrManager.SetPowerSchema(value); } }
+            set { if (value != null && !value.IsActive) { pwrManager.SetPowerSchema(value); } }
         }
 
         public MainWindowViewModel()
@@ -30,7 +30,11 @@ namespace PowerSwitcher.TrayApp.ViewModels
             pwrManager.PropertyChanged += PwrManager_PropertyChanged;
             config.Data.PropertyChanged += SettingsData_PropertyChanged;
 
-            updateOnlyDefaultSchemasSetting();
+            Schemas = pwrManager.Schemas.WhereObservableSwitchable<ObservableCollection<IPowerSchema>, IPowerSchema>
+                (
+                sch => defaultGuids.Contains(sch.Guid) || sch.IsActive,
+                config.Data.ShowOnlyDefaultSchemas
+                );
         }
 
         private void SettingsData_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -43,12 +47,8 @@ namespace PowerSwitcher.TrayApp.ViewModels
 
         private void updateOnlyDefaultSchemasSetting()
         {
-            if (!config.Data.ShowOnlyDefaultSchemas) { Schemas = pwrManager.Schemas; RaisePropertyChangedEvent(nameof(Schemas)); }
-            else
-            {
-                Schemas = pwrManager.Schemas.WhereObservable<ObservableCollection<IPowerSchema>, IPowerSchema>(sch => defaultGuids.Contains(sch.Guid) || sch.IsActive);
-                RaisePropertyChangedEvent(nameof(Schemas));
-            }
+
+            (Schemas as ObservableCollectionWhereSwitchableShim<ObservableCollection<IPowerSchema>, IPowerSchema>).FilterOn = config.Data.ShowOnlyDefaultSchemas;
         }
 
         private void PwrManager_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
