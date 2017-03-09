@@ -15,18 +15,102 @@ namespace Petrroll.Helpers
         {
             return new ObservableCollectionWhereShim<C, T>(collection, predicate);
         }
+
+        public static ObservableCollectionWhereSwitchableShim<C, T> WhereObservableSwitchable<C, T>(this C collection, Func<T, bool> predicate, bool filterOn) where C : INotifyCollectionChanged, ICollection<T> where T : INotifyPropertyChanged
+        {
+            return new ObservableCollectionWhereSwitchableShim<C, T>(collection, predicate, filterOn);
+        }
+    }
+
+    public class ObservableCollectionWhereSwitchableShim<C, T> : ObservableCollectionWhereShim<C, T>, IEnumerable<T> where C : INotifyCollectionChanged, ICollection<T> where T : INotifyPropertyChanged
+    {
+        protected IEnumerable<T> currentlySwichtedCollection => (FilterOn) ? filteredCollection : BaseCollection;
+
+        #region Constructor
+        public ObservableCollectionWhereSwitchableShim(C baseCollection, Func<T, bool> predicate, bool filterOn) : base(baseCollection, predicate)
+        {
+            this.filterOn = filterOn;
+        }
+        #endregion
+
+        #region CollectionAndElementChanged
+        protected override void Obs_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (filterOn) { base.Obs_CollectionChanged(sender, e); }
+            else { RaiseCollectionChanged(e); }
+        }
+
+        protected override void Sch_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (filterOn) { base.Sch_PropertyChanged(sender, e); }
+        }
+        #endregion
+
+        #region WhereSwitch
+        private bool filterOn;
+        public bool FilterOn
+        {
+            get { return filterOn; }
+            set
+            {
+                if(value == filterOn) { return; }
+                filterOn = value;
+
+                if (filterOn) { removeFilteredElements();  }
+                else { addFilteredElements(); }
+            }
+        }
+
+        private void removeFilteredElements()
+        {
+            int indexInFiltered = 0;
+            foreach(var element in BaseCollection)
+            {
+                if (Predicate(element)) { indexInFiltered++; }
+                else
+                {
+                    RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, new List<T> { element }, indexInFiltered));
+                }
+            }
+        }
+
+        private void addFilteredElements()
+        {
+            int indexInNotFiltered = 0;
+            foreach (var element in BaseCollection)
+            {
+                if (!Predicate(element))
+                {
+                    RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new List<T> { element }, indexInNotFiltered));
+                }
+                indexInNotFiltered++;
+            }
+        }
+        #endregion
+
+        #region OtherMethods
+        public override int Count => currentlySwichtedCollection.Count();
+        public override bool Contains(T item) => currentlySwichtedCollection.Contains(item);
+        public override void CopyTo(T[] array, int arrayIndex) => currentlySwichtedCollection.ToList().CopyTo(array, arrayIndex);
+
+        public override IEnumerator<T> GetEnumerator() => currentlySwichtedCollection.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => currentlySwichtedCollection.GetEnumerator();
+        #endregion
     }
 
     public class ObservableCollectionWhereShim<C, T> : INotifyCollectionChanged, ICollection<T> where C : ICollection<T>, INotifyCollectionChanged where T : INotifyPropertyChanged
     {
+        #region Variables
         public event NotifyCollectionChangedEventHandler CollectionChanged;
 
         public Func<T, bool> Predicate { get; private set; }
         public C BaseCollection { get; private set; }
 
-        private int numberOfItems;
-        private IEnumerable<T> filteredCollection => BaseCollection.Where(Predicate);
+        protected int numberOfItems;
+        protected IEnumerable<T> filteredCollection => BaseCollection.Where(Predicate);
+        #endregion
 
+        #region Constructor
         public ObservableCollectionWhereShim(C baseCollection, Func<T, bool> predicate)
         {
             Predicate = predicate;
@@ -37,8 +121,10 @@ namespace Petrroll.Helpers
             baseCollection.CollectionChanged += Obs_CollectionChanged;
             baseCollection.ForEach(sch => sch.PropertyChanged += Sch_PropertyChanged);
         }
+        #endregion
 
-        private void Sch_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        #region ChangedEvents
+        protected virtual void Sch_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             int oldNumberOfItems = numberOfItems;
             int newNumberOfItems = filteredCollection.Count();
@@ -56,7 +142,7 @@ namespace Petrroll.Helpers
             }
         }
 
-        private void Obs_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        protected virtual void Obs_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             numberOfItems = filteredCollection.Count();
             switch (e.Action)
@@ -83,7 +169,9 @@ namespace Petrroll.Helpers
             if (e.NewItems != null) { e.NewItems.ForEach(sch => ((T)sch).PropertyChanged += Sch_PropertyChanged); }
             if (e.OldItems != null) { e.OldItems.ForEach(sch => ((T)sch).PropertyChanged -= Sch_PropertyChanged); }
         }
+        #endregion
 
+        #region HandleOperations
         private void handleMove(NotifyCollectionChangedEventArgs e)
         {
             var newItems = getNewItems(e);
@@ -135,8 +223,9 @@ namespace Petrroll.Helpers
         {
             RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
+        #endregion
 
-
+        #region GetNewAndOldElements
         private IList getOldItems(NotifyCollectionChangedEventArgs e)
         {
             return e.OldItems.Cast<T>().Where(Predicate).ToList();
@@ -156,13 +245,17 @@ namespace Petrroll.Helpers
         {
             return (e.NewStartingIndex < 0) ? e.NewStartingIndex : BaseCollection.Take(e.NewStartingIndex).Count(Predicate);
         }
+        #endregion
 
+        #region RaiseCollection
         protected void RaiseCollectionChanged(NotifyCollectionChangedEventArgs args)
         {
             CollectionChanged?.Invoke(this, args);
         }
+        #endregion
 
-        public int Count => BaseCollection.Count(Predicate);
+        #region OtherMethods
+        public virtual int Count => filteredCollection.Count();
         public bool IsReadOnly => ((ICollection<T>)BaseCollection).IsReadOnly;
 
         public void Add(T item) => BaseCollection.Add(item);
@@ -173,14 +266,15 @@ namespace Petrroll.Helpers
             BaseCollection.Clear();
         }
 
-        public bool Contains(T item) => filteredCollection.Contains(item);
-
-        public void CopyTo(T[] array, int arrayIndex) => filteredCollection.ToList().CopyTo(array, arrayIndex);
-
         public bool Remove(T item) => BaseCollection.Remove(item);
 
-        public IEnumerator<T> GetEnumerator() => filteredCollection.GetEnumerator();
+        public virtual bool Contains(T item) => filteredCollection.Contains(item);
+
+        public virtual void CopyTo(T[] array, int arrayIndex) => filteredCollection.ToList().CopyTo(array, arrayIndex);
+
+        public virtual IEnumerator<T> GetEnumerator() => filteredCollection.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => filteredCollection.GetEnumerator();
+        #endregion
     }
 }
