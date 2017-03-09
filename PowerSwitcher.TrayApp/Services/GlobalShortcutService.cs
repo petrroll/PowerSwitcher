@@ -37,7 +37,7 @@ namespace PowerSwitcher.TrayApp.Services
 
     public class HotKeyService : IDisposable
     {
-        private Dictionary<int, HotKey> _dictHotKeyToCalBackProc;
+        private readonly Dictionary<int, HotKey> _dictHotKeyToCalBackProc;
 
         [DllImport("user32.dll", SetLastError = true)]
         private static extern bool RegisterHotKey(IntPtr hWnd, int id, UInt32 fsModifiers, UInt32 vlc);
