@@ -67,11 +67,13 @@ namespace PowerSwitcher
             }
 
             //remove old schemas
+            var schemasToBeRemoved = new List<IPowerSchema>();
             foreach (var oldSchema in Schemas)
             {
                 if (newSchemas.FirstOrDefault(sch => sch.Guid == oldSchema.Guid) == null)
-                { Schemas.Remove(oldSchema); }
+                { schemasToBeRemoved.Add(oldSchema); }
             }
+            schemasToBeRemoved.ForEach(sch => Schemas.Remove(sch));
         }
 
         private void noSchemaIsActive()
@@ -111,7 +113,7 @@ namespace PowerSwitcher
 
         public void SetPowerSchema(Guid guid)
         {
-            powerWraper.SetActiveGuid(guid);
+            try { powerWraper.SetActiveGuid(guid); } catch (PowerSwitcherWrappersException) { }
             UpdateSchemas();
         }
 
