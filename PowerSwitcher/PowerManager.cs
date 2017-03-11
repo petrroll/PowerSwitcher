@@ -100,6 +100,7 @@ namespace PowerSwitcher
             CurrentSchema = newActiveSchema;
             RaisePropertyChangedEvent(nameof(CurrentSchema));
 
+            //can cause change change of curr power schema: http://stackoverflow.com/questions/42703092/remove-selection-when-selected-item-gets-deleted-from-listbox
             if (oldActiveSchema != null) { ((PowerSchema)oldActiveSchema).IsActive = false; }
         }
 
