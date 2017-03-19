@@ -118,7 +118,7 @@
             Margin="0"
             PreviewMouseWheel="LayoutRoot_PreviewMouseWheel"
             >
-        <ListBox x:Name="ElementsList" KeyboardNavigation.TabNavigation="Cycle" Focusable="False" SelectionMode="Single" ItemsSource="{Binding Schemas}" SelectedItem="{Binding ActiveSchema}" IsSynchronizedWithCurrentItem="True" >
+        <ListBox x:Name="ElementsList" KeyboardNavigation.TabNavigation="Cycle" Focusable="False" SelectionMode="Single" ItemsSource="{Binding Schemas}" SelectedItem="{Binding ActiveSchema}" IsSynchronizedWithCurrentItem="False" >
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <Label Content="{Binding Name}" Tag="{Binding Guid}" MouseLeftButtonDown="Label_MouseLeftButtonDown" />
