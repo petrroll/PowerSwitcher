@@ -33,6 +33,7 @@ namespace PowerSwitcher.TrayApp
                 ));
 
             Configuration = new ConfigurationInstance<PowerSwitcherSettings>(configurationManager);
+            migrateSettings();
 
             HotKeyManager = new HotKeyService();
             HotKeyFailed = false;
@@ -45,6 +46,17 @@ namespace PowerSwitcher.TrayApp
             if (Configuration.Data.ShowOnShortcutSwitch) { registerHotkeyFromConfiguration(); }
 
             TrayApp.CreateAltMenu();
+        }
+
+        private void migrateSettings()
+        {
+            //Migration of shortcut because Creators update uses WinShift + S for screenshots
+            if(Configuration.Data.ShowOnShortcutKey == System.Windows.Input.Key.S &&
+                Configuration.Data.ShowOnShortcutKeyModifier == (KeyModifier.Shift | KeyModifier.Win))
+            {
+                Configuration.Data.ShowOnShortcutKey = System.Windows.Input.Key.L;
+                Configuration.Save();
+            }
         }
 
         private void Configuration_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

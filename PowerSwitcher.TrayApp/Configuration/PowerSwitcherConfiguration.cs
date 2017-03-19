@@ -16,7 +16,7 @@ namespace PowerSwitcher.TrayApp.Configuration
         public Guid AutomaticPlanGuidOffAC { get; set; } = new Guid("a1841308-3541-4fab-bc81-f71556f20b4a");
 
         //TODO: Fix so that it can be changed during runtime
-        public Key ShowOnShortcutKey { get; set; } = Key.S;
+        public Key ShowOnShortcutKey { get; set; } = Key.L;
         public KeyModifier ShowOnShortcutKeyModifier { get; set; } = KeyModifier.Shift | KeyModifier.Win;
 
         bool showOnShortcutSwitch = false;

@@ -6,7 +6,7 @@ Features:
 - Ability to limit flyout only to Windows default power plan schemas
 - Automatic schema switching when AC adapter gets connected / disconnected
 - Launch on Windows startup
-- Flyout shortcut (Shift+Win+S)
+- Flyout shortcut (Shift+Win+L)
 - Navigate the flyout with keyboard (use tab)
 - Change all settings by right-clicking on the tray icon :)
 
