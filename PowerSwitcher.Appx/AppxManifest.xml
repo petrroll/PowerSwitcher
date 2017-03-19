@@ -7,7 +7,7 @@
   <Identity Name="28671Petrroll.PowerPlanSwitcher"
     ProcessorArchitecture="x86"
     Publisher="CN=DFCA8587-B6FA-4F7D-9B35-1ABB74757F2E"
-    Version="0.4.3.0" />
+    Version="0.4.4.0" />
   <Properties>
     <DisplayName>PowerPlanSwitcher</DisplayName>
     <PublisherDisplayName>Petrroll</PublisherDisplayName>
