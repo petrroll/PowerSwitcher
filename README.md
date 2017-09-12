@@ -9,12 +9,13 @@ Features:
 - Flyout shortcut (Shift+Win+L)
 - Navigate the flyout with keyboard (use tab)
 - Change all settings by right-clicking on the tray icon :)
+- Get it at [Windows Store](https://www.microsoft.com/en-us/store/p/powerplanswitcher/9nblggh556l3) for free!
 
 ### Other:
 Feel free to buy me a beer at: [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=houskape%40gmail%2ecom&lc=CZ&item_name=PowerPlanSwitcher&item_number=042&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted)
 
 ### Special thanks to:
-- Icon made by [Cursor creative](http://www.flaticon.com/authors/cursor-creative) from [flaticon.com](http://www.flaticon.com/)
+- Icon made by [Cursor creative](http://www.flaticon.com/authors/cursor-creative) fromÂ [flaticon.com](http://www.flaticon.com/)
 - [EarTrumpet](https://github.com/File-New-Project/EarTrumpet) project for flyout, interop stuff, and some other help :)
  - David Golden (@GoldenTao)
  - Rafael Rivera (@WithinRafael)
