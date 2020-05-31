@@ -123,6 +123,9 @@
   <data name="AboutAppURL" xml:space="preserve">
     <value>http://github.com/Petrroll/PowerSwitcher</value>
   </data>
+  <data name="ApplicationName" xml:space="preserve">
+    <value>Application trigger</value>
+  </data>
   <data name="AppName" xml:space="preserve">
     <value>PowerPlanSwitcher</value>
   </data>
@@ -144,8 +147,14 @@
   <data name="SchemaToSwitchOffAc" xml:space="preserve">
     <value>Schema to switch to off AC</value>
   </data>
+  <data name="SchemaToSwitchOffApp" xml:space="preserve">
+    <value>Schema to switch to when application exits</value>
+  </data>
   <data name="SchemaToSwitchOnAc" xml:space="preserve">
     <value>Schema to switch to on AC</value>
+  </data>
+  <data name="SchemaToSwitchOnApp" xml:space="preserve">
+    <value>Schema to switch to when application starts</value>
   </data>
   <data name="Settings" xml:space="preserve">
     <value>Settings</value>
