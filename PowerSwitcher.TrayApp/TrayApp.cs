@@ -7,6 +7,8 @@ using System.Linq;
 using System.Reflection;
 using System.Windows;
 using WF = System.Windows.Forms;
+using System.Management;
+using Microsoft.VisualBasic;
 
 
 namespace PowerSwitcher.TrayApp
@@ -20,6 +22,8 @@ namespace PowerSwitcher.TrayApp
         public event Action ShowFlyout;
         IPowerManager pwrManager;
         ConfigurationInstance<PowerSwitcherSettings> configuration;
+        ManagementEventWatcher startWatcher;
+        ManagementEventWatcher stopWatcher;
         #endregion
 
         #region Contructor
@@ -29,6 +33,13 @@ namespace PowerSwitcher.TrayApp
             pwrManager.PropertyChanged += PwrManager_PropertyChanged;
 
             configuration = config;
+
+            startWatcher = new ManagementEventWatcher("Select * From Win32_ProcessStartTrace");
+            startWatcher.EventArrived += new EventArrivedEventHandler(startWatcher_EventArrived);
+            stopWatcher = new ManagementEventWatcher("Select * From Win32_ProcessStopTrace");
+            stopWatcher.EventArrived += new EventArrivedEventHandler(stopWatcher_EventArrived);
+            startWatcher.Start();
+            stopWatcher.Start();
 
             _trayIcon = new WF.NotifyIcon();
             _trayIcon.MouseClick += TrayIcon_MouseClick;
@@ -55,6 +66,28 @@ namespace PowerSwitcher.TrayApp
 
             var contextMenuSettings = contextMenuRootItems.Add(AppStrings.Settings);
             contextMenuSettings.Name = "settings";
+
+            var applicationNameItem = contextMenuSettings.MenuItems.Add("");
+            if (configuration.Data.AutomaticAppSwitchApp == "")
+            {
+                applicationNameItem.Text = $"{AppStrings.ApplicationName} - Not Enabled";
+            }
+            else
+            {
+                applicationNameItem.Text = $"{AppStrings.ApplicationName} - {configuration.Data.AutomaticAppSwitchApp}";
+            }
+            applicationNameItem.Name = "settingsAppName";
+            applicationNameItem.Click += AppNameItem_Click;
+
+            var settingsOnAppItem = contextMenuSettings.MenuItems.Add(AppStrings.SchemaToSwitchOnApp);
+            settingsOnAppItem.Name = "settingsOnApp";
+            settingsOnAppItem.Enabled = (configuration.Data.AutomaticAppSwitchApp != "");
+
+            var settingsOffAppItem = contextMenuSettings.MenuItems.Add(AppStrings.SchemaToSwitchOffApp);
+            settingsOffAppItem.Name = "settingsOffApp";
+            settingsOffAppItem.Enabled = (configuration.Data.AutomaticAppSwitchApp != "");
+
+            contextMenuSettings.MenuItems.Add("-");
 
             var settingsOnACItem = contextMenuSettings.MenuItems.Add(AppStrings.SchemaToSwitchOnAc);
             settingsOnACItem.Name = "settingsOnAC";
@@ -142,6 +175,29 @@ namespace PowerSwitcher.TrayApp
 
             configuration.Save();
         }
+        private void AppNameItem_Click(object sender, EventArgs e)
+        {
+            configuration.Data.AutomaticAppSwitchApp = Interaction.InputBox(
+                "Enter process name for app switching. Set to blank to disable",
+                "Enter process name for app switching",
+                configuration.Data.AutomaticAppSwitchApp
+            );
+
+            if (configuration.Data.AutomaticAppSwitchApp != "")
+            {
+                _trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsOnApp"].Enabled = true;
+                _trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsOffApp"].Enabled = true;
+                _trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsAppName"].Text = $"{AppStrings.ApplicationName} - {configuration.Data.AutomaticAppSwitchApp}";
+            }
+            else
+            {
+                _trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsOnApp"].Enabled = false;
+                _trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsOffApp"].Enabled = false;
+                _trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsAppName"].Text = $"{AppStrings.ApplicationName} - Not enabled";
+            }
+
+            configuration.Save();
+        }
 
         #endregion
 
@@ -177,6 +233,35 @@ namespace PowerSwitcher.TrayApp
             pwrManager.SetPowerSchema(schemaToSwitchTo);
         }
 
+        #endregion
+
+        #region AppStartStopRelated
+        void startWatcher_EventArrived(object sender, EventArrivedEventArgs e)
+        {
+            if ((string)e.NewEvent["ProcessName"] == configuration.Data.AutomaticAppSwitchApp) { processesChanged(true); }
+        }
+        void stopWatcher_EventArrived(object sender, EventArrivedEventArgs e)
+        {
+            if ((string)e.NewEvent["ProcessName"] == configuration.Data.AutomaticAppSwitchApp) { processesChanged(false); }
+        }
+        private void processesChanged(bool started)
+        {
+            Guid schemaGuidToSwitch = default(Guid);
+            switch (started)
+            {
+                case true:
+                    schemaGuidToSwitch = configuration.Data.AutomaticPlanGuidOnApp;
+                    break;
+                case false:
+                    schemaGuidToSwitch = configuration.Data.AutomaticPlanGuidOffApp;
+                    break;
+                default:
+                    break;
+            }
+            IPowerSchema schemaToSwitchTo = pwrManager.Schemas.FirstOrDefault(sch => sch.Guid == schemaGuidToSwitch);
+            if (schemaToSwitchTo == null) { return; }
+            pwrManager.SetPowerSchema(schemaToSwitchTo);
+        }
         #endregion
 
         #region ContextMenuItemRelatedStuff
@@ -215,6 +300,21 @@ namespace PowerSwitcher.TrayApp
                 );
 
             _trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsOnAC"].MenuItems.Add(0, newItemSettingsOnAC);
+
+            var newItemSettingsOffApp = getNewPowerSchemaItem(
+                powerSchema,
+                (s, ea) => setPowerSchemaAsOffApp(powerSchema),
+                (powerSchema.Guid == configuration.Data.AutomaticPlanGuidOffApp)
+                );
+            _trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsOffApp"].MenuItems.Add(0, newItemSettingsOffApp);
+
+            var newItemSettingsOnApp = getNewPowerSchemaItem(
+                powerSchema,
+                (s, ea) => setPowerSchemaAsOnApp(powerSchema),
+                (powerSchema.Guid == configuration.Data.AutomaticPlanGuidOnApp)
+                );
+
+            _trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsOnApp"].MenuItems.Add(0, newItemSettingsOnApp);
         }
 
         private void clearPowerSchemasInTray()
@@ -230,6 +330,8 @@ namespace PowerSwitcher.TrayApp
 
             _trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsOffAC"].MenuItems.Clear();
             _trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsOnAC"].MenuItems.Clear();
+            _trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsOffApp"].MenuItems.Clear();
+            _trayIcon.ContextMenu.MenuItems["settings"].MenuItems["settingsOnApp"].MenuItems.Clear();
         }
 
         private WF.MenuItem getNewPowerSchemaItem(IPowerSchema powerSchema, EventHandler clickedHandler, bool isChecked)
@@ -256,6 +358,17 @@ namespace PowerSwitcher.TrayApp
             configuration.Data.AutomaticPlanGuidOnAC = powerSchema.Guid;
             configuration.Save();
         }
+        private void setPowerSchemaAsOffApp(IPowerSchema powerSchema)
+        {
+            configuration.Data.AutomaticPlanGuidOffApp = powerSchema.Guid;
+            configuration.Save();
+        }
+
+        private void setPowerSchemaAsOnApp(IPowerSchema powerSchema)
+        {
+            configuration.Data.AutomaticPlanGuidOnApp = powerSchema.Guid;
+            configuration.Save();
+        }
 
         private void switchToPowerSchema(IPowerSchema powerSchema)
         {
@@ -280,6 +393,11 @@ namespace PowerSwitcher.TrayApp
         {
             _trayIcon.Visible = false;
             _trayIcon.Dispose();
+
+            startWatcher.Stop();
+            stopWatcher.Stop();
+            startWatcher.Dispose();
+            stopWatcher.Dispose();
 
             pwrManager.Dispose();
 

@@ -14,6 +14,10 @@ namespace PowerSwitcher.TrayApp.Configuration
         public bool AutomaticOnACSwitch { get; set; } = false;
         public Guid AutomaticPlanGuidOnAC { get; set; } = new Guid("8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c");
         public Guid AutomaticPlanGuidOffAC { get; set; } = new Guid("a1841308-3541-4fab-bc81-f71556f20b4a");
+        public Guid AutomaticPlanGuidOnApp { get; set; } = new Guid("8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c");
+        public Guid AutomaticPlanGuidOffApp { get; set; } = new Guid("a1841308-3541-4fab-bc81-f71556f20b4a");
+
+        public string AutomaticAppSwitchApp { get; set; } = "";
 
         //TODO: Fix so that it can be changed during runtime
         public Key ShowOnShortcutKey { get; set; } = Key.L;

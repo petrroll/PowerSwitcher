@@ -19,7 +19,7 @@ namespace PowerSwitcher.TrayApp.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class AppStrings {
@@ -75,6 +75,15 @@ namespace PowerSwitcher.TrayApp.Resources {
         internal static string AboutAppURL {
             get {
                 return ResourceManager.GetString("AboutAppURL", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Application trigger.
+        /// </summary>
+        internal static string ApplicationName {
+            get {
+                return ResourceManager.GetString("ApplicationName", resourceCulture);
             }
         }
         
@@ -142,11 +151,29 @@ namespace PowerSwitcher.TrayApp.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Schema to switch to when application exits.
+        /// </summary>
+        internal static string SchemaToSwitchOffApp {
+            get {
+                return ResourceManager.GetString("SchemaToSwitchOffApp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Schema to switch to on AC.
         /// </summary>
         internal static string SchemaToSwitchOnAc {
             get {
                 return ResourceManager.GetString("SchemaToSwitchOnAc", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Schema to switch to when application starts.
+        /// </summary>
+        internal static string SchemaToSwitchOnApp {
+            get {
+                return ResourceManager.GetString("SchemaToSwitchOnApp", resourceCulture);
             }
         }
         
