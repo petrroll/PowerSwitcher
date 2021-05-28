@@ -19,7 +19,7 @@ namespace PowerSwitcher.TrayApp.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class AppStrings {
@@ -169,11 +169,20 @@ namespace PowerSwitcher.TrayApp.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enable shortcut for cycling next schema.
+        /// </summary>
+        internal static string ToggleCycleNextSchemaSwitch {
+            get {
+                return ResourceManager.GetString("ToggleCycleNextSchemaSwitch", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Enable shortcut for flyout toggle.
         /// </summary>
-        internal static string ToggleOnShowrtcutSwitch {
+        internal static string ToggleOnShortcutSwitch {
             get {
-                return ResourceManager.GetString("ToggleOnShowrtcutSwitch", resourceCulture);
+                return ResourceManager.GetString("ToggleOnShortcutSwitch", resourceCulture);
             }
         }
     }
