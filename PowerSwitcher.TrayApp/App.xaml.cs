@@ -28,7 +28,7 @@ namespace PowerSwitcher.TrayApp
             if (!tryToCreateMutex()) return;
 
             var configurationManager = new ConfigurationManagerXML<PowerSwitcherSettings>(Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), 
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 "Petrroll", "PowerSwitcher", "PowerSwitcherSettings.xml"
                 ));
 
@@ -44,6 +44,7 @@ namespace PowerSwitcher.TrayApp
 
             Configuration.Data.PropertyChanged += Configuration_PropertyChanged;
             if (Configuration.Data.ShowOnShortcutSwitch) { registerHotkeyFromConfiguration(); }
+            if (Configuration.Data.CycleNextSchemaSwitch) { registerHotkeyFromConfiguration(true); }
 
             TrayApp.CreateAltMenu();
         }
@@ -66,22 +67,45 @@ namespace PowerSwitcher.TrayApp
                 if (Configuration.Data.ShowOnShortcutSwitch) { registerHotkeyFromConfiguration(); }
                 else { unregisterHotkeyFromConfiguration(); }
             }
+
+            if(e.PropertyName == nameof(PowerSwitcherSettings.CycleNextSchemaSwitch))
+            {
+                if (Configuration.Data.CycleNextSchemaSwitch) { registerHotkeyFromConfiguration(true); }
+                else { unregisterHotkeyFromConfiguration(true); }
+            }
+
         }
 
-        private void unregisterHotkeyFromConfiguration()
+        private void unregisterHotkeyFromConfiguration(bool isCycleNextSchemaSwitch = false)
         {
-            HotKeyManager.Unregister(new HotKey(Configuration.Data.ShowOnShortcutKey, Configuration.Data.ShowOnShortcutKeyModifier));
+            if(isCycleNextSchemaSwitch)
+                HotKeyManager.Unregister(new HotKey(Configuration.Data.CycleNextSchemaKey, Configuration.Data.CycleNextSchemaKeyModifier));
+            else
+                HotKeyManager.Unregister(new HotKey(Configuration.Data.ShowOnShortcutKey, Configuration.Data.ShowOnShortcutKeyModifier));
         }
 
-        private bool registerHotkeyFromConfiguration()
+        private bool registerHotkeyFromConfiguration(bool isCycleNextSchemaSwitch = false)
         {
-            var newHotKey = new HotKey(Configuration.Data.ShowOnShortcutKey, Configuration.Data.ShowOnShortcutKeyModifier);
+            HotKey newHotKey = null;
+            if(isCycleNextSchemaSwitch)
+                newHotKey = new HotKey(Configuration.Data.CycleNextSchemaKey, Configuration.Data.CycleNextSchemaKeyModifier);
+            else
+                newHotKey = new HotKey(Configuration.Data.ShowOnShortcutKey, Configuration.Data.ShowOnShortcutKeyModifier);
 
             bool success = HotKeyManager.Register(newHotKey);
             if(!success) { HotKeyFailed = true; return false; }
-            newHotKey.HotKeyFired += (this.MainWindow as MainWindow).ToggleWindowVisibility;
+
+            if (isCycleNextSchemaSwitch)
+                newHotKey.HotKeyFired += CycleNextPowerSchema;
+            else
+                newHotKey.HotKeyFired += (this.MainWindow as MainWindow).ToggleWindowVisibility;
 
             return true;
+        }
+
+        private void CycleNextPowerSchema()
+        {
+            PowerManager.CycleNextPowerSchema();
         }
 
         private bool tryToCreateMutex()

@@ -20,7 +20,7 @@ namespace PowerSwitcher.TrayApp.Services
         public event Action HotKeyFired;
 
         public int VirtualKeyCode => KeyInterop.VirtualKeyFromKey(Key);
-        public int Id =>  VirtualKeyCode + ((int)KeyModifiers* 0x10000); 
+        public int Id =>  VirtualKeyCode + ((int)KeyModifiers* 0x10000);
 
         public HotKey(Key k, KeyModifier keyModifiers)
         {
@@ -72,10 +72,10 @@ namespace PowerSwitcher.TrayApp.Services
         {
             if (!_dictHotKeyToCalBackProc.ContainsKey(hotkey.Id)) { throw new InvalidOperationException($"Trying to unregister not-registred Hotkey {hotkey.Id}"); }
 
-            var success = UnregisterHotKey(IntPtr.Zero, hotkey.Id); 
+            var success = UnregisterHotKey(IntPtr.Zero, hotkey.Id);
             if (!success) { throw new PowerSwitcherWrappersException($"UnregisterHotKey() failed|{Marshal.GetLastWin32Error()}"); }
 
-            _dictHotKeyToCalBackProc.Remove(hotkey.Id);          
+            _dictHotKeyToCalBackProc.Remove(hotkey.Id);
         }
 
         public const int WmHotKey = 0x0312;

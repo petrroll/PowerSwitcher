@@ -74,10 +74,15 @@ namespace PowerSwitcher.TrayApp
             onlyDefaultSchemasItem.Checked = configuration.Data.ShowOnlyDefaultSchemas;
             onlyDefaultSchemasItem.Click += OnlyDefaultSchemas_Click;
 
-            var enableShortcutsToggleItem = contextMenuSettings.MenuItems.Add($"{AppStrings.ToggleOnShowrtcutSwitch} ({configuration.Data.ShowOnShortcutKeyModifier} + {configuration.Data.ShowOnShortcutKey})");
+            var enableShortcutsToggleItem = contextMenuSettings.MenuItems.Add($"{AppStrings.ToggleOnShortcutSwitch} ({configuration.Data.ShowOnShortcutKeyModifier} + {configuration.Data.ShowOnShortcutKey})");
             enableShortcutsToggleItem.Enabled = !(Application.Current as App).HotKeyFailed;
             enableShortcutsToggleItem.Checked = configuration.Data.ShowOnShortcutSwitch;
             enableShortcutsToggleItem.Click += EnableShortcutsToggleItem_Click;
+
+            var enableCycleNextToggleItem = contextMenuSettings.MenuItems.Add($"{AppStrings.ToggleCycleNextSchemaSwitch} ({configuration.Data.CycleNextSchemaKeyModifier} + {configuration.Data.CycleNextSchemaKey})");
+            enableCycleNextToggleItem.Enabled = !(Application.Current as App).HotKeyFailed;
+            enableCycleNextToggleItem.Checked = configuration.Data.CycleNextSchemaSwitch;
+            enableCycleNextToggleItem.Click += EnableCycleNextToggleItem_Click;
 
             var aboutItem = contextMenuRootItems.Add($"{AppStrings.About} ({Assembly.GetEntryAssembly().GetName().Version})");
             aboutItem.Click += About_Click;
@@ -110,6 +115,18 @@ namespace PowerSwitcher.TrayApp
 
             configuration.Save();
         }
+
+        private void EnableCycleNextToggleItem_Click(object sender, EventArgs e)
+        {
+            WF.MenuItem enableCycleNextToggleItem = (WF.MenuItem)sender;
+
+            configuration.Data.CycleNextSchemaSwitch = !configuration.Data.CycleNextSchemaSwitch;
+            enableCycleNextToggleItem.Checked = configuration.Data.CycleNextSchemaSwitch;
+            enableCycleNextToggleItem.Enabled = !(Application.Current as App).HotKeyFailed;
+
+            configuration.Save();
+        }
+
 
         private void AutomaticHideItem_Click(object sender, EventArgs e)
         {
