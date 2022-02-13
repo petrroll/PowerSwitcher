@@ -20,6 +20,8 @@ namespace PowerSwitcher
 
         void SetPowerSchema(IPowerSchema schema);
         void SetPowerSchema(Guid guid);
+
+        void CycleNextPowerSchema();
     }
 
     public class PowerManager : ObservableObject, IPowerManager
@@ -53,10 +55,10 @@ namespace PowerSwitcher
             {
                 var originalSchema = Schemas.FirstOrDefault(sch => sch.Guid == newSchema.Guid);
                 if (originalSchema == null) { insertNewSchema(newSchemas, newSchema); originalSchema = newSchema; }
-               
+
                 if (newSchema.Guid == currSchemaGuid && originalSchema?.IsActive != true)
                 { setNewCurrSchema(originalSchema); }
-                
+
                 if (originalSchema?.Name != newSchema.Name)
                 { ((PowerSchema)originalSchema).Name = newSchema.Name; }
             }
@@ -125,8 +127,20 @@ namespace PowerSwitcher
             RaisePropertyChangedEvent(nameof(CurrentPowerStatus));
         }
 
+        public void CycleNextPowerSchema()
+        {
+            var nextSchemaIndex = (Schemas.IndexOf(CurrentSchema) + 1);
+            if ((nextSchemaIndex + 1) > Schemas.Count)
+                nextSchemaIndex = 0;
+
+            var nextPowerSchema = Schemas[nextSchemaIndex];
+
+            SetPowerSchema(nextPowerSchema);
+        }
+
+
         #region IDisposable Support
-        private bool disposedValue = false; 
+        private bool disposedValue = false;
 
         protected virtual void Dispose(bool disposing)
         {
@@ -143,8 +157,8 @@ namespace PowerSwitcher
         {
             Dispose(true);
 
-            //No destructor so isn't required (yet)            
-            // GC.SuppressFinalize(this); 
+            //No destructor so isn't required (yet)
+            // GC.SuppressFinalize(this);
         }
 
         #endregion

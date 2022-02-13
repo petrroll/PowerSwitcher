@@ -1,6 +1,7 @@
 ﻿using Petrroll.Helpers;
 using PowerSwitcher.TrayApp.Services;
 using System;
+using System.Windows.Forms;
 using System.Windows.Input;
 
 namespace PowerSwitcher.TrayApp.Configuration
@@ -18,12 +19,15 @@ namespace PowerSwitcher.TrayApp.Configuration
         //TODO: Fix so that it can be changed during runtime
         public Key ShowOnShortcutKey { get; set; } = Key.L;
         public KeyModifier ShowOnShortcutKeyModifier { get; set; } = KeyModifier.Shift | KeyModifier.Win;
-
         bool showOnShortcutSwitch = false;
         public bool ShowOnShortcutSwitch { get { return showOnShortcutSwitch; } set { showOnShortcutSwitch = value; RaisePropertyChangedEvent(nameof(ShowOnShortcutSwitch)); } }
 
+        public Key CycleNextSchemaKey { get; set; } = Key.N;
+        public KeyModifier CycleNextSchemaKeyModifier { get; set; } = KeyModifier.Shift | KeyModifier.Win;
+        bool cycleNextSchemaSwitch = false;
+        public bool CycleNextSchemaSwitch { get { return cycleNextSchemaSwitch; } set { cycleNextSchemaSwitch = value; RaisePropertyChangedEvent(nameof(CycleNextSchemaSwitch)); } }
+
         bool showOnlyDefaultSchemas = false;
         public bool ShowOnlyDefaultSchemas { get { return showOnlyDefaultSchemas; } set { showOnlyDefaultSchemas = value; RaisePropertyChangedEvent(nameof(ShowOnlyDefaultSchemas)); } }
-
     }
 }

@@ -24,7 +24,7 @@ namespace Petrroll.Helpers
 
     public class ObservableCollectionWhereSwitchableShim<C, T> : ObservableCollectionWhereShim<C, T>, IEnumerable<T> where C : INotifyCollectionChanged, ICollection<T> where T : INotifyPropertyChanged
     {
-        protected IEnumerable<T> currentlySwichtedCollection => (FilterOn) ? filteredCollection : BaseCollection;
+        protected IEnumerable<T> currentlySwitchedCollection => (FilterOn) ? filteredCollection : BaseCollection;
 
         #region Constructor
         public ObservableCollectionWhereSwitchableShim(C baseCollection, Func<T, bool> predicate, bool filterOn) : base(baseCollection, predicate)
@@ -96,12 +96,12 @@ namespace Petrroll.Helpers
         #endregion
 
         #region OtherMethods
-        public override int Count => currentlySwichtedCollection.Count();
-        public override bool Contains(T item) => currentlySwichtedCollection.Contains(item);
-        public override void CopyTo(T[] array, int arrayIndex) => currentlySwichtedCollection.ToList().CopyTo(array, arrayIndex);
+        public override int Count => currentlySwitchedCollection.Count();
+        public override bool Contains(T item) => currentlySwitchedCollection.Contains(item);
+        public override void CopyTo(T[] array, int arrayIndex) => currentlySwitchedCollection.ToList().CopyTo(array, arrayIndex);
 
-        public override IEnumerator<T> GetEnumerator() => currentlySwichtedCollection.GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator() => currentlySwichtedCollection.GetEnumerator();
+        public override IEnumerator<T> GetEnumerator() => currentlySwitchedCollection.GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => currentlySwitchedCollection.GetEnumerator();
         #endregion
     }
 
@@ -147,7 +147,7 @@ namespace Petrroll.Helpers
             else if (oldNumberOfItems > numberOfFilteredItems)
             {
                 #if DEBUG
-                Console.WriteLine($"DC:Added:{sender}"); 
+                Console.WriteLine($"DC:Added:{sender}");
                 #endif
                 var changeIndex = BaseCollection.Take(BaseCollection.IndexOf(sender)).Count(Predicate);
                 RaiseCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, sender, changeIndex));
